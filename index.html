@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#1A1D21">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Tull Pro</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#1A1D21;--sur:#252A31;--sur2:#2E3338;--bor:#363C45;--amb:#F5A623;--red:#E84B3A;--grn:#4CAF7D;--blu:#4A9EFF;--wht:#F0F2F5;--dim:#8B95A1;--txt:#C8D0DA}
+html,body{height:100%;background:var(--bg);color:var(--wht);font-family:system-ui,sans-serif;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;background:var(--bg);border-bottom:1px solid var(--bor);flex-shrink:0;position:relative;z-index:50}
+.logo{font-size:17px;font-weight:900;letter-spacing:-.5px}.logo span{color:var(--amb)}
+.pname{font-size:10px;color:var(--dim);font-weight:600;margin-top:1px}
+.mbtn{background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--wht);padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.dd{position:absolute;top:100%;right:14px;background:var(--sur);border:1px solid var(--bor);border-radius:12px;min-width:200px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}
+.ddi{display:flex;align-items:center;gap:10px;padding:13px 16px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--bor)}
+.ddi:last-child{border-bottom:none}
+.tabs{display:flex;padding:8px 14px 0;gap:2px;flex-shrink:0;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:7px 10px;font-size:10px;font-weight:800;letter-spacing:.5px;border-bottom:2px solid transparent;color:var(--dim);cursor:pointer}
+.tab.active{color:var(--amb);border-color:var(--amb)}
+.body{flex:1;overflow-y:auto;padding:12px 14px 80px}
+.srow{display:flex;gap:8px;margin-bottom:12px}
+.stat{flex:1;background:var(--sur);border:1px solid var(--bor);border-radius:10px;padding:10px 10px 8px}
+.sn{font-size:20px;font-weight:900;line-height:1}.sl{font-size:9px;font-weight:700;letter-spacing:.6px;color:var(--dim);margin-top:3px}
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:12px;padding:12px 14px 12px 17px;margin-bottom:8px;position:relative}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.card.high::before{background:var(--red)}.card.medium::before{background:var(--amb)}.card.low::before{background:var(--grn)}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:5px}
+.cname{font-size:13px;font-weight:800}
+.bgs{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.bg{font-size:9px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:4px}
+.bh{background:rgba(232,75,58,.15);color:var(--red);border:1px solid rgba(232,75,58,.3)}
+.bm{background:rgba(245,166,35,.12);color:var(--amb);border:1px solid rgba(245,166,35,.25)}
+.bl{background:rgba(76,175,125,.15);color:var(--grn);border:1px solid rgba(76,175,125,.3)}
+.bon{background:rgba(76,175,125,.15);color:var(--grn);border:1px solid rgba(76,175,125,.3)}
+.bup{background:rgba(245,166,35,.12);color:var(--amb);border:1px solid rgba(245,166,35,.25)}
+.cmeta{font-size:11px;color:var(--dim);margin-bottom:7px;line-height:1.6}
+.cact{display:flex;gap:5px;flex-wrap:wrap}
+.mini{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;border:1px solid var(--bor);background:var(--sur2);color:var(--dim);cursor:pointer}
+.mini.red{color:var(--red);border-color:rgba(232,75,58,.3)}
+.sh{font-size:9px;font-weight:800;letter-spacing:.7px;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.sh span.cnt{background:var(--sur2);border-radius:4px;padding:1px 6px;color:var(--dim);font-weight:700}
+.empty{text-align:center;padding:44px 20px;color:var(--dim)}
+.ei{font-size:38px;margin-bottom:10px}.et{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:6px}.es{font-size:12px;line-height:1.6}
+/* Gantt */
+.gw{overflow-x:auto;border:1px solid var(--bor);border-radius:12px;background:var(--sur)}
+.gh{display:flex;padding-left:110px;border-bottom:1px solid var(--bor);position:sticky;top:0;background:var(--sur2);z-index:2}
+.gd{flex:1;min-width:26px;font-size:8px;font-weight:700;color:var(--dim);text-align:center;padding:4px 0}
+.gd.tod{color:var(--amb)}.gd.wk{color:rgba(139,149,161,.4)}
+.gr{display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.04);min-height:34px}
+.gr:last-child{border-bottom:none}
+.gl{width:110px;flex-shrink:0;padding:3px 8px;font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt)}
+.gg{flex:1;display:flex;position:relative;min-height:34px}
+.gc{flex:1;min-width:26px;border-left:1px solid rgba(255,255,255,.04)}
+.gc.tod{background:rgba(245,166,35,.07)}.gc.wkc{background:rgba(255,255,255,.02)}
+.gbars{position:absolute;inset:0;display:flex;align-items:center}
+.todl{position:absolute;top:0;bottom:0;width:2px;background:var(--amb);opacity:.7;z-index:3}
+/* Modals */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.mo{background:var(--sur);border-radius:18px 18px 0 0;padding:20px 16px 40px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto}
+.mot{font-size:15px;font-weight:900;margin-bottom:14px}
+.fr{margin-bottom:10px}.fl{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--dim);margin-bottom:4px}
+.fi{width:100%;background:var(--bg);border:1px solid var(--bor);border-radius:8px;color:var(--wht);font-size:13px;padding:9px 12px;outline:none;font-family:inherit}
+.fi:focus{border-color:var(--amb)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.seg{display:flex;gap:4px}
+.so{flex:1;padding:7px 4px;text-align:center;font-size:10px;font-weight:800;border-radius:7px;border:1px solid var(--bor);background:var(--bg);color:var(--dim);cursor:pointer}
+.so.sh{background:rgba(232,75,58,.2);color:var(--red);border-color:var(--red)}
+.so.sm{background:rgba(245,166,35,.2);color:var(--amb);border-color:var(--amb)}
+.so.sl{background:rgba(76,175,125,.2);color:var(--grn);border-color:var(--grn)}
+.so.son{background:rgba(76,175,125,.2);color:var(--grn);border-color:var(--grn)}
+.so.sup{background:rgba(245,166,35,.15);color:var(--amb);border-color:var(--amb)}
+.br{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;padding:11px;border-radius:9px;border:none;font-size:13px;font-weight:800;cursor:pointer}
+.ba{background:var(--amb);color:#111}.bd{background:var(--sur2);color:var(--dim)}.bre{background:var(--red);color:#fff}
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--amb);border:none;color:#111;font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(245,166,35,.4);z-index:10;display:flex;align-items:center;justify-content:center}
+.hidden{display:none!important}
+textarea.fi{min-height:70px;resize:none}
+.leg{display:flex;gap:12px;align-items:center;margin-bottom:8px;padding:8px 10px;background:var(--sur);border-radius:8px;border:1px solid var(--bor)}
+.li{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--dim)}
+.lb{width:20px;height:6px;border-radius:2px}
+.ibox{background:var(--sur);border:2px dashed var(--bor);border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:12px}
+.pb{height:4px;background:var(--sur2);border-radius:2px;margin:12px 0;overflow:hidden}
+.pf{height:100%;background:var(--amb);border-radius:2px;transition:width .3s}
+.sbr{display:flex;gap:8px;margin-bottom:12px}
+.sbtn{flex:1;padding:10px;border-radius:9px;border:none;font-size:11px;font-weight:800;cursor:pointer}
+.sa{background:var(--amb);color:#111}.sd{background:var(--sur);color:var(--wht);border:1px solid var(--bor)}
+.cpc{background:var(--sur);border:1px solid var(--bor);border-radius:12px;padding:14px;margin-bottom:10px}
+.cpc.danger{border-color:rgba(232,75,58,.4);background:rgba(232,75,58,.06)}
+.cpc.good{border-color:rgba(76,175,125,.3);background:rgba(76,175,125,.05)}
+.cpl{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--dim);margin-bottom:4px}
+.cpv{font-size:20px;font-weight:900}
+.cps{font-size:11px;color:var(--dim);margin-top:3px}
+/* LA table */
+.lat td,.lat th{border:1px solid var(--bor);padding:5px 7px;font-size:10px;vertical-align:top}
+.lat th{background:var(--sur2);color:var(--amb);font-size:9px;letter-spacing:.5px}
+.lat tr.wkend td{background:#1e3a5f;color:#7eb8f7;font-weight:700}
+/* Search */
+.srch{position:relative;margin-bottom:10px}
+.srch input{padding-left:32px}
+.srch .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--dim)}
+.srch .sc{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hdr">
+    <div>
+      <div class="logo">TULL<span>PRO</span></div>
+      <div class="pname" id="pname">Loading…</div>
+    </div>
+    <button class="mbtn" onclick="toggleMenu()">☰ MENU</button>
+    <div class="dd hidden" id="dd">
+      <div class="ddi" onclick="openRename()">✏️ Edit Project Name</div>
+      <div class="ddi" onclick="openImport()">📄 Import MS Project PDF</div>
+      <div class="ddi" onclick="newProj()">➕ New Project</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" id="tab-list" onclick="sw('list')">TRADES</div>
+    <div class="tab" id="tab-gantt" onclick="sw('gantt')">PROGRAMME</div>
+    <div class="tab" id="tab-critical" onclick="sw('critical')">CRITICAL PATH</div>
+    <div class="tab" id="tab-lookahead" onclick="sw('lookahead')">4-WEEK</div>
+  </div>
+  <div class="body" id="body"></div>
+</div>
+<button class="fab" id="fab" onclick="openAdd()">＋</button>
+
+<!-- Trade modal -->
+<div class="mbg hidden" id="tm" onclick="if(event.target.id==='tm')closeM('tm')">
+<div class="mo">
+  <div class="mot" id="tmt">Add Trade</div>
+  <div class="fr"><div class="fl">TRADE NAME</div><input class="fi" id="fn" placeholder="e.g. Concrete, Electrical…" autocomplete="off"></div>
+  <div class="fr"><div class="fl">COMPANY</div><input class="fi" id="fc" placeholder="Optional"></div>
+  <div class="f2">
+    <div><div class="fl">START DATE</div><input class="fi" id="fs" type="date"></div>
+    <div><div class="fl">END DATE</div><input class="fi" id="fe" type="date"></div>
+  </div>
+  <div class="fr"><div class="fl">PRIORITY</div>
+    <div class="seg" id="spri">
+      <div class="so" data-v="high" onclick="selSeg('pri','high')">HIGH</div>
+      <div class="so" data-v="medium" onclick="selSeg('pri','medium')">MED</div>
+      <div class="so" data-v="low" onclick="selSeg('pri','low')">LOW</div>
+    </div>
+  </div>
+  <div class="fr"><div class="fl">STATUS</div>
+    <div class="seg" id="ssta">
+      <div class="so" data-v="onsite" onclick="selSeg('sta','onsite')">ON SITE</div>
+      <div class="so" data-v="upcoming" onclick="selSeg('sta','upcoming')">UPCOMING</div>
+    </div>
+  </div>
+  <div class="fr"><div class="fl">NOTES</div><textarea class="fi" id="fnotes" placeholder="Any notes…"></textarea></div>
+  <div style="border-top:1px solid var(--bor);margin:12px 0"></div>
+  <div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--amb);margin-bottom:10px">📍 ACTUAL / FORECAST</div>
+  <div class="f2">
+    <div><div class="fl">ACTUAL START</div><input class="fi" id="fas" type="date"></div>
+    <div><div class="fl">FORECAST FINISH</div><input class="fi" id="fae" type="date"></div>
+  </div>
+  <div id="delprev" style="display:none;font-size:11px;padding:8px 10px;border-radius:8px;background:var(--sur2);margin-bottom:4px"></div>
+  <div class="br">
+    <button class="btn bd" onclick="closeM('tm')">Cancel</button>
+    <button class="btn ba" onclick="saveTrade()">Save Trade</button>
+  </div>
+</div></div>
+
+<!-- Rename modal -->
+<div class="mbg hidden" id="rm" onclick="if(event.target.id==='rm')closeM('rm')">
+<div class="mo">
+  <div class="mot">Edit Project Name</div>
+  <div class="fr"><div class="fl">PROJECT NAME</div><input class="fi" id="rn" placeholder="Project name"></div>
+  <div class="br"><button class="btn bd" onclick="closeM('rm')">Cancel</button><button class="btn ba" onclick="saveRename()">Save</button></div>
+</div></div>
+
+<!-- Import modal -->
+<div class="mbg hidden" id="im" onclick="if(event.target.id==='im')closeM('im')">
+<div class="mo">
+  <div class="mot">Import MS Project PDF</div>
+  <div class="ibox" onclick="document.getElementById('pf').click()">
+    <div style="font-size:32px;margin-bottom:8px">📄</div>
+    <div style="font-size:13px;font-weight:800;margin-bottom:4px">Tap to select PDF</div>
+    <div id="isub" style="font-size:11px;color:var(--dim)">Requires Anthropic API key — set in Menu → AI Settings</div>
+  </div>
+  <input type="file" id="pf" accept="application/pdf" style="display:none" onchange="handlePDF(this)">
+  <div id="ist" style="display:none"><div id="imsg" style="font-size:13px;font-weight:700;margin-bottom:8px;text-align:center"></div><div class="pb"><div class="pf" id="iprog" style="width:0%"></div></div></div>
+  <div id="irev" style="display:none"></div>
+  <div class="br"><button class="btn bd" onclick="closeM('im');resetImport()">Close</button></div>
+</div></div>
+
+<!-- API key modal -->
+<div class="mbg hidden" id="am" onclick="if(event.target.id==='am')closeM('am')">
+<div class="mo">
+  <div class="mot">🔑 AI Settings</div>
+  <div style="font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6">Get a free API key at <strong style="color:var(--amb)">console.anthropic.com</strong> → API Keys → Create Key</div>
+  <div class="fr"><div class="fl">ANTHROPIC API KEY</div><input class="fi" id="aki" type="password" placeholder="sk-ant-…"></div>
+  <div id="aks" style="font-size:11px;margin-bottom:8px"></div>
+  <div class="br"><button class="btn bd" onclick="closeM('am')">Cancel</button><button class="btn ba" onclick="saveKey()">Save Key</button></div>
+</div></div>
+
+<!-- Confirm modal -->
+<div class="mbg hidden" id="cm">
+<div class="mo">
+  <div class="mot" id="ct">Are you sure?</div>
+  <div style="font-size:13px;color:var(--dim);margin-bottom:20px" id="cmsg"></div>
+  <div class="br"><button class="btn bd" onclick="closeM('cm')">Cancel</button><button class="btn bre" id="cok">Delete</button></div>
+</div></div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────
+const SK='tullpro_v4';
+const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+const DEFTRADES=[
+  ["Site Establishment","2025-06-27","2025-07-04","medium","onsite"],
+  ["Fence Construction Zone","2025-06-30","2025-07-02","medium","onsite"],
+  ["Establish Site Amenities","2025-07-03","2025-07-04","low","onsite"],
+  ["External Demolition","2025-07-08","2025-07-29","high","onsite"],
+  ["Demolish Shed A","2025-07-11","2025-07-17","high","onsite"],
+  ["Remove Vegetation & Hardstands","2025-07-18","2025-07-29","medium","onsite"],
+  ["Art Room Refurbishment","2025-07-11","2025-09-30","medium","onsite"],
+  ["Electrical Rough In — Art Room","2025-08-08","2025-08-21","high","onsite"],
+  ["Hydraulic Rough In — Art Room","2025-08-08","2025-08-21","high","onsite"],
+  ["Mechanical Rough In — Art Room","2025-08-08","2025-08-21","high","onsite"],
+  ["Window Installation — Art Room","2025-08-12","2025-08-22","medium","onsite"],
+  ["Sheet Plaster Walls — Art Room","2025-08-25","2025-08-29","medium","onsite"],
+  ["Stop & Sand Plaster — Art Room","2025-09-02","2025-09-08","medium","onsite"],
+  ["Install Joinery — Art Room","2025-09-09","2025-09-16","medium","onsite"],
+  ["Paint Final Coats — Art Room","2025-09-17","2025-09-19","low","onsite"],
+  ["Electrical Fit Off — Art Room","2025-09-22","2025-09-25","high","onsite"],
+  ["Hydraulic Fit Off — Art Room","2025-09-22","2025-09-25","high","onsite"],
+  ["Mechanical Fit Off — Art Room","2025-09-22","2025-09-25","high","onsite"],
+  ["Install Floor Finishes — Art Room","2025-09-17","2025-09-19","medium","onsite"],
+  ["Cut and Fill Works","2025-07-30","2025-08-26","high","onsite"],
+  ["Piling — Southern Piles","2025-08-19","2025-09-25","high","onsite"],
+  ["Piling — Northern & Community Hub","2025-09-22","2025-10-02","high","onsite"],
+  ["Lift Pit Excavation & Construction","2025-09-30","2025-10-15","high","onsite"],
+  ["Ground Floor Slab — Pour 1 Admin South","2025-10-02","2025-12-12","high","onsite"],
+  ["Ground Floor Slab — Pour 2 Admin North","2025-12-15","2026-01-28","high","onsite"],
+  ["Ground Floor Slab — Pour 3 Community Hub","2026-01-29","2026-02-27","high","onsite"],
+  ["Installation of Precast Lift Core","2025-12-16","2025-12-17","high","onsite"],
+  ["First Floor Slab — Install Bondek & Formwork","2026-02-13","2026-02-24","high","onsite"],
+  ["First Floor Slab — Pour","2026-03-16","2026-03-24","high","onsite"],
+  ["Structural Steel — GF Admin/Classrooms","2026-02-02","2026-02-12","high","onsite"],
+  ["Structural Steel — Roof & Stairs","2026-04-01","2026-05-08","high","onsite"],
+  ["Structural Steel — Community Hub","2026-03-04","2026-03-23","high","onsite"],
+  ["Facade Trusses Installed","2026-05-04","2026-05-06","high","onsite"],
+  ["Demolition — Strip Out Old Art Room","2025-10-16","2025-10-22","high","onsite"],
+  ["Demolition — Internal Penetrations L1","2026-03-31","2026-04-29","high","onsite"],
+  ["Demolition — Internal Penetrations GF","2026-04-30","2026-05-22","high","onsite"],
+  ["Demolition — External Penetrations","2026-03-25","2026-04-27","high","onsite"],
+  ["FRP Edge Beams and Slab","2026-06-23","2026-07-03","high","onsite"],
+  ["Temporary Propping","2026-03-25","2026-05-22","high","onsite"],
+  ["Install Scaffolding — Admin","2026-05-06","2026-05-13","medium","onsite"],
+  ["Roofing — Admin Building","2026-04-29","2026-07-15","high","onsite"],
+  ["Install Safety Mesh","2026-04-29","2026-05-01","medium","onsite"],
+  ["Install Parapet Framing","2026-05-12","2026-05-15","medium","onsite"],
+  ["Install Spacers / Insulation / Roofing","2026-05-18","2026-05-26","high","onsite"],
+  ["Install Flashing and Gutters","2026-07-13","2026-07-15","medium","upcoming"],
+  ["Fire Rated Cladding to Columns","2026-04-29","2026-05-01","high","onsite"],
+  ["Firespray Protection to Beams","2026-05-04","2026-05-07","high","onsite"],
+  ["External Wall Framing GF and L1","2026-05-25","2026-05-29","medium","onsite"],
+  ["Install Sarking — Upper Level","2026-06-01","2026-06-03","medium","onsite"],
+  ["Install Brick Veneer — Upper Level","2026-06-04","2026-07-10","medium","onsite"],
+  ["Install Window Frames — Upper Level","2026-06-11","2026-06-17","medium","onsite"],
+  ["Install Glazing — Upper Level","2026-06-25","2026-06-30","medium","onsite"],
+  ["Install Window Shrouds","2026-07-02","2026-07-06","low","upcoming"],
+  ["Caulking / Flashing / Cleaning","2026-07-07","2026-07-13","low","upcoming"],
+  ["Install Window Frames — Lower Level","2026-06-18","2026-06-23","medium","onsite"],
+  ["Install Cement Sheet Cladding & Battens","2026-07-16","2026-07-30","medium","upcoming"],
+  ["Wall Setout & Metal Stud — Admin GF","2026-05-18","2026-05-21","medium","onsite"],
+  ["Install Internal Window & Door Frames — GF","2026-05-22","2026-05-27","medium","onsite"],
+  ["Services Rough In — Admin GF","2026-05-28","2026-06-10","high","onsite"],
+  ["Sheet Plaster Walls — Admin GF","2026-07-01","2026-07-09","medium","upcoming"],
+  ["Stop & Sand Plaster — Admin GF","2026-07-08","2026-07-13","medium","upcoming"],
+  ["Seal & Defect Plaster — Admin GF","2026-07-14","2026-07-17","medium","upcoming"],
+  ["Frame Ceiling System — Admin GF","2026-07-21","2026-07-24","medium","upcoming"],
+  ["Waterproofing to Wet Areas — GF","2026-07-27","2026-07-29","high","upcoming"],
+  ["Install Internal Linings & Acoustic Panelling — GF","2026-08-04","2026-08-13","medium","upcoming"],
+  ["Install Ceiling Tiles — Admin GF","2026-08-14","2026-08-21","medium","upcoming"],
+  ["Install Joinery — Admin GF","2026-08-24","2026-08-31","medium","upcoming"],
+  ["Services Fit Off — Admin GF","2026-09-08","2026-09-14","high","upcoming"],
+  ["Install Floor Finishes — Admin GF","2026-09-10","2026-09-21","medium","upcoming"],
+  ["Install Carpet / Matting / Tactiles — GF","2026-09-24","2026-10-01","low","upcoming"],
+  ["Wall Setout & Metal Stud — Admin L1","2026-06-26","2026-07-01","medium","onsite"],
+  ["Services Rough In — Admin L1","2026-07-02","2026-07-10","high","upcoming"],
+  ["Sheet Plaster Walls — Admin L1","2026-07-13","2026-07-17","medium","upcoming"],
+  ["Frame Ceiling System — Admin L1","2026-08-03","2026-08-07","medium","upcoming"],
+  ["Install Ceiling Tiles — Admin L1","2026-08-28","2026-09-02","medium","upcoming"],
+  ["Install Joinery — Admin L1","2026-09-03","2026-09-08","medium","upcoming"],
+  ["Services Fit Off — Admin L1","2026-09-03","2026-09-08","high","upcoming"],
+  ["Install Floor Finishes — Admin L1","2026-09-09","2026-09-15","medium","upcoming"],
+  ["Install Carpet / Matting / Tactiles — L1","2026-09-23","2026-09-30","low","upcoming"],
+  ["Wall Setout & Metal Stud — Old Art Room","2026-07-06","2026-07-09","medium","upcoming"],
+  ["Services Rough In — Old Art Room","2026-07-10","2026-07-16","high","upcoming"],
+  ["Sheet Plaster Walls — Old Art Room","2026-07-17","2026-07-24","medium","upcoming"],
+  ["Install Ceiling Tiles — Old Art Room","2026-09-04","2026-09-10","medium","upcoming"],
+  ["Install Joinery — Old Art Room","2026-09-11","2026-09-18","medium","upcoming"],
+  ["Services Fit Off — Old Art Room","2026-09-16","2026-09-22","high","upcoming"],
+  ["Install Floor Finishes — Old Art Room","2026-09-18","2026-10-01","medium","upcoming"],
+  ["Install Carpet / Tactiles — Old Art Room","2026-10-07","2026-10-12","low","upcoming"],
+  ["External Framing — Community Hub","2026-03-24","2026-03-30","medium","onsite"],
+  ["Install Roof Sheeting & Flashings — Hub","2026-04-01","2026-04-21","high","onsite"],
+  ["Install Skylights — Community Hub","2026-05-13","2026-05-19","medium","onsite"],
+  ["Brick Veneer — Community Hub Lower","2026-03-31","2026-04-16","medium","onsite"],
+  ["Brick Veneer — Community Hub Upper","2026-04-20","2026-05-01","medium","onsite"],
+  ["Install Metal Cladding — Community Hub","2026-05-04","2026-05-15","medium","onsite"],
+  ["Install Windows — Community Hub","2026-05-04","2026-05-08","medium","onsite"],
+  ["Install Tilt Doors — Community Hub","2026-07-23","2026-07-27","medium","upcoming"],
+  ["Wall Setout & Metal Stud — Community Hub","2026-03-31","2026-04-15","medium","onsite"],
+  ["Install Internal Door Frames — Hub","2026-04-16","2026-04-21","medium","onsite"],
+  ["Services Rough In — Community Hub","2026-04-22","2026-05-14","high","onsite"],
+  ["Sheet Plaster Walls — Community Hub","2026-05-18","2026-05-22","medium","onsite"],
+  ["Stop & Sand Plaster — Community Hub","2026-05-25","2026-05-29","medium","onsite"],
+  ["Frame Ceiling — Gym","2026-06-01","2026-06-04","medium","onsite"],
+  ["Install Ceiling Tiles — Gym","2026-06-15","2026-06-19","medium","onsite"],
+  ["Delivery & Acclimatisation — Timber Floor","2026-07-28","2026-08-25","medium","upcoming"],
+  ["Installation of Timber Floor — Gym","2026-08-26","2026-09-08","medium","upcoming"],
+  ["Install Rubber Flooring — Gym","2026-09-09","2026-09-11","medium","upcoming"],
+  ["Install Joinery — Community Hub","2026-06-25","2026-06-29","medium","onsite"],
+  ["Install Ceiling Frame — Amenities","2026-05-20","2026-05-22","medium","onsite"],
+  ["Services Rough In — Amenities","2026-05-25","2026-05-29","high","onsite"],
+  ["Sheet Ceiling — Amenities","2026-06-01","2026-06-04","medium","onsite"],
+  ["Install Waterproofing — Amenities","2026-06-15","2026-06-17","high","onsite"],
+  ["Install Flooring — Amenities","2026-06-18","2026-06-22","medium","onsite"],
+  ["Services Fit Off — Community Hub","2026-07-07","2026-07-10","high","upcoming"],
+  ["Electrical — Power On to MSB","2026-07-13","2026-07-17","high","upcoming"],
+  ["Electrical — Vic Smart Lead In","2026-01-16","2026-01-22","high","onsite"],
+  ["Hydraulics — OSD Tank Install","2026-07-31","2026-08-21","high","upcoming"],
+  ["Hydraulics — Water Assembly","2026-04-14","2026-04-20","high","onsite"],
+  ["Vertical Transport — Lift Installation","2026-07-06","2026-07-27","high","upcoming"],
+  ["Electrical Testing & Commissioning","2026-09-23","2026-10-01","high","upcoming"],
+  ["Mechanical Testing & Commissioning","2026-09-23","2026-10-01","high","upcoming"],
+  ["Hydraulic Commissioning","2026-10-08","2026-10-15","high","upcoming"],
+  ["Fire Commissioning","2026-10-06","2026-10-12","high","upcoming"],
+  ["AV Testing & Commissioning","2026-10-06","2026-10-12","medium","upcoming"],
+  ["Vertical Transport Commissioning","2026-07-28","2026-08-03","high","upcoming"],
+  ["External Slabs — Water Meter & Pathways","2026-07-06","2026-07-15","medium","upcoming"],
+  ["Asphalt","2026-08-31","2026-09-16","medium","upcoming"],
+  ["Brick Seating","2026-07-31","2026-08-28","low","upcoming"],
+  ["Soft Landscaping","2026-08-31","2026-09-29","low","upcoming"],
+  ["Planting / Rocks / Logs","2026-09-21","2026-09-29","low","upcoming"],
+  ["Electrical Power — Headworks","2026-04-09","2026-07-03","high","onsite"],
+  ["Electrical Power — Connection Works","2026-07-06","2026-07-10","high","upcoming"],
+  ["Electrical Data — Infrastructure","2025-11-07","2026-01-15","high","onsite"],
+  ["Final Clean — Main Building","2026-10-06","2026-10-12","low","upcoming"],
+  ["Final Defecting","2026-10-08","2026-10-12","low","upcoming"],
+  ["OP Application & Inspection","2026-10-12","2026-10-15","medium","upcoming"],
+  ["Practical Completion","2026-10-15","2026-11-16","high","upcoming"],
+  ["Project Completion","2026-11-16","2026-11-16","high","upcoming"]
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let S={trades:[],proj:'West Bundle — Thornbury PS',cpPri:[]};
+let tab='list',search='',showDone=false,gOff=0,cpOff=0,editId=null,fSel={pri:'medium',sta:'upcoming'};
+let menuOpen=false,_dragId=null;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function today(){return new Date().toISOString().slice(0,10)}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)}
+function diff(a,b){return Math.round((new Date(b)-new Date(a))/86400000)}
+function fmt(s){if(!s)return'—';const[y,m,d]=s.split('-');return d+'/'+m+'/'+y.slice(2)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function save(){try{localStorage.setItem(SK,JSON.stringify(S))}catch(e){}}
+function load(){
+  try{
+    const d=localStorage.getItem(SK);
+    if(d){const p=JSON.parse(d);if(p&&p.trades&&p.trades.length>0){S={trades:[],proj:'West Bundle — Thornbury PS',cpPri:[],...p};return}}
+  }catch(e){}
+  S.trades=DEFTRADES.map(t=>({id:uid(),name:t[0],start:t[1],end:t[2],pri:t[3],status:t[4],company:'',astart:'',aend:'',notes:'',deps:[]}));
+  S.proj='West Bundle — Thornbury PS';
+  save();
+}
+
+// ── MENU ──────────────────────────────────────────────────────────────
+function toggleMenu(){menuOpen=!menuOpen;document.getElementById('dd').classList.toggle('hidden',!menuOpen)}
+function closeMenu(){menuOpen=false;document.getElementById('dd').classList.add('hidden')}
+document.addEventListener('click',e=>{if(menuOpen&&!e.target.closest('.hdr'))closeMenu()});
+function openRename(){closeMenu();document.getElementById('rn').value=S.proj;openM('rm')}
+function saveRename(){const v=document.getElementById('rn').value.trim();if(v){S.proj=v;save();updProj()}closeM('rm')}
+function updProj(){document.getElementById('pname').textContent=S.proj||'No project'}
+function newProj(){closeMenu();confirm2('Start New Project?','This will clear all trades.',()=>{S.trades=[];S.proj='New Project';save();updProj();render()})}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function sw(t){
+  tab=t;
+  if(t==='gantt')gOff=0;
+  if(t==='critical')cpOff=0;
+  ['list','gantt','critical','lookahead'].forEach(x=>document.getElementById('tab-'+x).className='tab'+(x===t?' active':''));
+  document.getElementById('fab').classList.toggle('hidden',t!=='list');
+  render();
+}
+function render(){
+  if(tab==='list')renderList();
+  else if(tab==='gantt')renderGantt();
+  else if(tab==='critical')renderCritical();
+  else renderLookahead();
+}
+
+// ── TRADES LIST ──────────────────────────────────────────────────────────
+function renderList(){
+  const B=document.getElementById('body');
+  const t=today();
+  const all=S.trades;
+  const on=all.filter(x=>x.status==='onsite');
+  const up=all.filter(x=>x.status==='upcoming');
+  const hi=all.filter(x=>x.pri==='high');
+
+  let h=`<div class="srow">
+    <div class="stat"><div class="sn" style="color:var(--grn)">${on.length}</div><div class="sl">ON SITE</div></div>
+    <div class="stat"><div class="sn" style="color:var(--amb)">${up.length}</div><div class="sl">UPCOMING</div></div>
+    <div class="stat"><div class="sn" style="color:var(--red)">${hi.length}</div><div class="sl">HIGH PRI</div></div>
+  </div>
+  <div class="srch"><span class="si">🔍</span><input class="fi" id="si" placeholder="Search trades…" value="${esc(search)}" oninput="search=this.value;renderList()" autocomplete="off">${search?`<button class="sc" onclick="search='';renderList()">✕</button>`:''}</div>`;
+
+  if(!all.length){B.innerHTML=h+`<div class="empty"><div class="ei">🏗️</div><div class="et">No trades yet</div><div class="es">Tap ＋ to add your first trade</div></div>`;return}
+
+  const q=search.toLowerCase();
+  const filt=x=>!q||x.name.toLowerCase().includes(q)||(x.company||'').toLowerCase().includes(q);
+  const byStart=(a,b)=>(!a.start&&!b.start)?0:!a.start?1:!b.start?-1:a.start.localeCompare(b.start);
+
+  const active=all.filter(x=>x.status==='onsite'||x.status==='upcoming');
+  const done=all.filter(x=>x.status!=='onsite'&&x.status!=='upcoming');
+
+  const onsite=active.filter(x=>x.status==='onsite').filter(filt).sort(byStart);
+  const upcoming=active.filter(x=>x.status==='upcoming').filter(filt).sort(byStart);
+  const nostat=done.filter(filt).sort((a,b)=>(b.end||'').localeCompare(a.end||''));
+
+  const card=x=>{
+    const del=x.aend&&x.aend>x.end;
+    const ear=x.aend&&x.aend<x.end;
+    const dd=x.aend&&x.end?diff(x.end,x.aend):0;
+    return`<div class="card ${x.pri}">
+      <div class="ctop"><div class="cname">${esc(x.name)}</div>
+      <div class="bgs"><span class="bg b${x.pri[0]}">${x.pri.toUpperCase()}</span>${del?`<span class="bg bh">+${dd}d</span>`:ear?`<span class="bg bl">${dd}d early</span>`:''}</div></div>
+      <div class="cmeta">${x.start?`📅 ${fmt(x.start)} → ${fmt(x.end)}`:'<i>No dates</i>'}${x.aend?` · <span style="color:${del?'var(--red)':ear?'var(--grn)':'var(--blu)'}">Forecast: ${fmt(x.aend)}</span>`:''}${x.company?`<br>🏢 ${esc(x.company)}`:''}${x.notes?`<br>📝 ${esc(x.notes.slice(0,50))}${x.notes.length>50?'…':''}`:''}</div>
+      <div class="cact"><button class="mini" onclick="openEdit('${x.id}')">✏️ Edit</button><button class="mini red" onclick="del2('${x.id}')">🗑</button></div>
+    </div>`;
+  };
+  const sec=(lbl,arr,col)=>arr.length?`<div class="sh" style="color:${col}">${lbl}<span class="cnt">${arr.length}</span></div>${arr.map(card).join('')}`:'';
+
+  h+=sec('ON SITE NOW',onsite,'var(--grn)');
+  h+=sec('UPCOMING',upcoming,'var(--amb)');
+
+  if(nostat.length){
+    h+=`<div style="margin-top:14px"><button onclick="showDone=!showDone;renderList()" style="width:100%;padding:10px;background:var(--sur);border:1px solid var(--bor);border-radius:10px;color:var(--dim);font-size:11px;font-weight:800;cursor:pointer">${showDone?'▲ HIDE':'▼ SHOW'} COMPLETED (${nostat.length})</button></div>`;
+    if(showDone)h+=`<div style="opacity:.6">${sec('COMPLETED',nostat,'var(--dim)')}</div>`;
+  }
+
+  if(!onsite.length&&!upcoming.length&&!q){
+    h+=`<div class="empty"><div class="ei">✅</div><div class="et">All trades accounted for</div></div>`;
+  }
+  B.innerHTML=h;
+  const si=document.getElementById('si');
+  if(si&&search){si.focus();si.setSelectionRange(si.value.length,si.value.length)}
+}
+
+// ── GANTT ──────────────────────────────────────────────────────────────
+const GW=3;
+function renderGantt(){
+  const B=document.getElementById('body');
+  const wd=S.trades.filter(t=>t.start&&t.end);
+  if(!wd.length){B.innerHTML=`<div class="empty"><div class="ei">📊</div><div class="et">No dates set</div></div>`;return}
+  const td=today(),dpp=GW*7;
+  const now=new Date(td),dow=now.getDay();
+  const mon=new Date(now);mon.setDate(now.getDate()-(dow===0?6:dow-1)+(gOff*7));
+  const wS=mon.toISOString().slice(0,10),wE=addDays(wS,dpp-1);
+  const dates=[];for(let i=0;i<dpp;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);dates.push(d.toISOString().slice(0,10))}
+  const ti=dates.indexOf(td);
+  const vis=wd.filter(t=>t.start<=wE&&t.end>=wS).sort((a,b)=>a.start.localeCompare(b.start));
+  const pw=d=>(d/dpp*100).toFixed(2)+'%';
+  const fmW=d=>`${d.getDate()}/${d.getMonth()+1}`;
+  const w1=new Date(mon),w2=new Date(mon),w3=new Date(mon);w2.setDate(w2.getDate()+7);w3.setDate(w3.getDate()+14);
+  const dEl=dates.map(ds=>{const d=new Date(ds);const iT=ds===td;const iW=d.getDay()===0||d.getDay()===6;return`<div class="gd${iT?' tod':''}${iW?' wk':''}">${DAYS[d.getDay()]}<br>${d.getDate()}</div>`}).join('');
+
+  let rows='';
+  vis.forEach(t=>{
+    const si=t.start<wS?0:(dates.indexOf(t.start)<0?-1:dates.indexOf(t.start));
+    const eiR=dates.indexOf(t.end);const ei=eiR<0?(t.end>wE?dpp-1:-1):eiR;
+    if(si<0||ei<0)return;
+    const cols=dates.map((ds,i)=>{const d=new Date(ds);const iW=d.getDay()===0||d.getDay()===6;return`<div class="gc${i===ti?' tod':''}${iW?' wkc':''}"></div>`}).join('');
+    const bc=t.pri==='high'?'var(--red)':t.pri==='medium'?'var(--amb)':'var(--grn)';
+    const haA=!!(t.aend);
+    const asi=haA?(t.astart&&t.astart>=wS?dates.indexOf(t.astart):0):0;
+    const aei=haA?(dates.indexOf(t.aend)<0?(t.aend>wE?dpp-1:-1):dates.indexOf(t.aend)):-1;
+    const isDel=haA&&t.aend>t.end,isEar=haA&&t.aend<t.end;
+    const ac=isDel?'var(--red)':isEar?'var(--grn)':'var(--blu)';
+    rows+=`<div class="gr">
+      <div class="gl" title="${esc(t.name)}">${esc(t.name)}</div>
+      <div class="gg">${cols}<div class="gbars">
+        ${ti>=0?`<div class="todl" style="left:${pw(ti)}"></div>`:''}
+        <div style="position:absolute;height:10px;top:6px;border-radius:3px;left:${pw(si)};width:${pw(ei-si+1)};background:${bc};opacity:.4"></div>
+        ${haA&&asi>=0&&aei>=0?`<div style="position:absolute;height:10px;bottom:6px;border-radius:3px;left:${pw(asi)};width:${pw(aei-asi+1)};background:${ac}"></div>`:''}
+      </div></div>
+    </div>`;
+  });
+
+  const nav=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <button onclick="gOff--;renderGantt()" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--wht);padding:6px 14px;font-size:16px;cursor:pointer">◀</button>
+    <div style="flex:1;text-align:center;font-size:11px;font-weight:800;color:var(--txt)">${gOff===0?'THIS WEEK':gOff>0?'+'+gOff+' WKS':gOff+' WKS'}</div>
+    <button onclick="gOff=0;renderGantt()" style="background:var(--amb);border:none;border-radius:8px;color:#111;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">TODAY</button>
+    <button onclick="gOff++;renderGantt()" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--wht);padding:6px 14px;font-size:16px;cursor:pointer">▶</button>
+  </div>`;
+
+  const impact=()=>{
+    const del=S.trades.filter(t=>t.aend&&t.end&&t.aend>t.end);
+    if(!del.length)return'';
+    const projE=S.trades.reduce((a,t)=>t.end>a?t.end:a,'');
+    const foreE=S.trades.reduce((a,t)=>{const e=t.aend||t.end;return e>a?e:a},'');
+    const d=diff(projE,foreE);
+    if(d>0)return`<div style="background:rgba(232,75,58,.08);border:1px solid rgba(232,75,58,.3);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:11px">⚠️ <strong>${d} day delay</strong> — ${del.length} trades running late · Forecast: ${fmt(foreE)}</div>`;
+    return'';
+  };
+
+  const leg=`<div class="leg"><div class="li"><div class="lb" style="background:var(--amb);opacity:.4"></div>Contract</div><div class="li"><div class="lb" style="background:var(--amb)"></div>Forecast</div></div>`;
+  const wH=`<div style="display:flex;padding-left:110px;border-bottom:1px solid var(--bor);background:var(--sur2)">${[w1,w2,w3].map(d=>`<div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--amb);padding:3px 0;border-left:1px solid var(--bor)">${fmW(d)}</div>`).join('')}</div>`;
+
+  B.innerHTML=nav+impact()+leg+`<div class="gw">${wH}<div class="gh">${dEl}</div>${rows||`<div style="text-align:center;padding:28px;color:var(--dim);font-size:12px">No trades in this window — use ◀ ▶ to navigate</div>`}</div>`;
+}
+
+// ── CRITICAL PATH ──────────────────────────────────────────────────────────
+const LOGIC=[
+  {s:/rough.?in|plaster|sheet|lining|ceiling|joinery|fit.?off|services.?fit|paint|floor.?finish|carpet|acoustic|waterproof|vinyl/i,p:[/roofing|roof.?sheet|cladding|brick.?veneer|facade/i]},
+  {s:/flashing|gutter|parapet|skylight/i,p:[/roofing|roof.?sheet/i]},
+  {s:/cladding|brick.?veneer|facade|sarking|external.?wall/i,p:[/structural.?steel|slab|first.?floor/i]},
+  {s:/structural.?steel|steel.?column/i,p:[/slab|ground.?floor|pour/i]},
+  {s:/slab|ground.?floor|cut.?and.?fill/i,p:[/piling/i]},
+  {s:/lift.?pit/i,p:[/piling/i]},
+  {s:/rough.?in|services.?rough/i,p:[/wall.?setout|metal.?stud|wall.?fram/i]},
+  {s:/sheet.?plaster|plaster.?wall|wall.?lining/i,p:[/rough.?in|services.?rough/i]},
+  {s:/stop.?and.?sand|plaster.*sand/i,p:[/sheet.?plaster|plaster.?wall/i]},
+  {s:/paint|undercoat/i,p:[/stop.?and.?sand|seal.*plaster/i]},
+  {s:/install.?joinery|joinery.*install/i,p:[/paint/i]},
+  {s:/fit.?off|services.?fit/i,p:[/install.?joinery|joinery.*install/i]},
+  {s:/floor.?finish|carpet|vinyl|timber.?floor.*install/i,p:[/fit.?off|services.?fit/i]},
+  {s:/ceiling.?frame|frame.?ceiling/i,p:[/rough.?in/i]},
+  {s:/ceiling.?tile|ceiling.?lin/i,p:[/ceiling.?frame|frame.?ceiling/i]},
+  {s:/commissioning|commission/i,p:[/fit.?off|floor.?finish/i]},
+  {s:/final.?clean|defecting|practical.?complet/i,p:[/commissioning/i]},
+  {s:/first.?floor/i,p:[/ground.?floor.?slab|concrete.?struct/i]},
+  {s:/demolit/i,p:[/piling|earthwork/i]},
+  {s:/lift.*install/i,p:[/lift.?shaft|lift.?pit/i]},
+];
+
+function cpCalc(){
+  const trades=S.trades.filter(t=>t.start&&t.end);
+  if(!trades.length)return null;
+  const BASE='2020-01-01';
+  const nodes=trades.map(t=>({id:t.id,name:t.name,pri:t.pri,status:t.status,start:t.astart||t.start,end:t.aend||t.end,planEnd:t.end,delayed:!!(t.aend&&t.aend>t.end),dur:diff(t.astart||t.start,t.aend||t.end)+1,deps:[],es:0,ef:0,ls:0,lf:0,float:999,crit:false}));
+  const byId={};nodes.forEach(n=>byId[n.id]=n);
+  nodes.forEach(succ=>{LOGIC.forEach(r=>{if(!r.s.test(succ.name))return;nodes.forEach(pred=>{if(pred.id===succ.id)return;if(r.p.some(p=>p.test(pred.name))&&pred.end<=succ.end&&!succ.deps.includes(pred.id))succ.deps.push(pred.id)})})});
+  nodes.forEach(n=>{n.es=diff(BASE,n.start);n.ef=n.es+n.dur-1});
+  const vis=new Set();
+  function fwd(n){if(vis.has(n.id))return;n.deps.forEach(id=>{if(byId[id])fwd(byId[id])});vis.add(n.id);if(n.deps.length){const me=Math.max(...n.deps.map(id=>byId[id]?byId[id].ef:-Infinity));if(me>n.es){n.es=me+1;n.ef=n.es+n.dur-1}}}
+  nodes.forEach(n=>fwd(n));
+  const pE=Math.max(...nodes.map(n=>n.ef));
+  nodes.forEach(n=>{n.lf=pE;n.ls=n.lf-n.dur+1;n.float=n.ls-n.es});
+  const vis2=new Set();
+  function bwd(n){if(vis2.has(n.id))return;vis2.add(n.id);n.deps.forEach(id=>{const p=byId[id];if(!p)return;const nf=n.ls-1;if(nf<p.lf){p.lf=nf;p.ls=p.lf-p.dur+1;p.float=p.ls-p.es}bwd(p)})}
+  nodes.filter(n=>!nodes.some(m=>m.deps.includes(n.id))).forEach(n=>bwd(n));
+  nodes.forEach(n=>{n.crit=n.float<=2});
+  const chain=nodes.filter(n=>n.crit).sort((a,b)=>a.es-b.es);
+  nodes.sort((a,b)=>a.es-b.es);
+  return{nodes,chain};
+}
+
+function renderCritical(){
+  const B=document.getElementById('body');
+  const cpm=cpCalc();
+  if(!cpm||!cpm.nodes.length){B.innerHTML=`<div class="empty"><div class="ei">🔴</div><div class="et">No data for Critical Path</div><div class="es">Add trades with dates to analyse</div></div>`;return}
+  const{nodes,chain}=cpm;
+  const td=today();
+  const pF=nodes.reduce((a,n)=>n.end>a?n.end:a,nodes[0].end);
+  const dL=diff(td,pF);const isL=dL<0;
+  const del=nodes.filter(n=>n.delayed&&n.crit);
+
+  let h=`<div class="srow">
+    <div class="stat"><div class="sn" style="color:var(--red)">${chain.length}</div><div class="sl">CRITICAL</div></div>
+    <div class="stat"><div class="sn" style="color:${del.length?'var(--red)':'var(--grn)'}">${del.length}</div><div class="sl">DELAYED</div></div>
+    <div class="stat"><div class="sn" style="color:${isL?'var(--red)':'var(--amb)'}">${Math.abs(dL)}</div><div class="sl">${isL?'DAYS LATE':'DAYS LEFT'}</div></div>
+  </div>
+  <div class="cpc ${isL?'danger':'good'}">
+    <div class="cpl">FORECAST COMPLETION</div>
+    <div class="cpv">${fmt(pF)}</div>
+    <div class="cps">${isL?'⚠️ Running late':'✅ On track'}</div>
+  </div>`;
+
+  // Priority sequence
+  if(chain.length){
+    const saved=S.cpPri||[];
+    const cIds=chain.map(n=>n.id);
+    const ord=[];
+    saved.forEach(id=>{if(cIds.includes(id))ord.push(id)});
+    chain.forEach(n=>{if(!ord.includes(n.id))ord.push(n.id)});
+    const byId2={};chain.forEach(n=>byId2[n.id]=n);
+    h+=`<div style="font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--red);margin:12px 0 6px;display:flex;align-items:center;justify-content:space-between">
+      <span>🎯 PRIORITY SEQUENCE</span>
+      <button onclick="S.cpPri=[];save();renderCritical()" style="font-size:9px;padding:3px 8px;border-radius:5px;border:1px solid var(--bor);background:var(--sur2);color:var(--dim);cursor:pointer">Reset</button>
+    </div><div id="cpseq">`;
+    ord.forEach((id,i)=>{
+      const n=byId2[id];if(!n)return;
+      const fl=Math.max(0,n.float);const isLast=i===ord.length-1;
+      const prev=i>0?(byId2[ord[i-1]]||{name:'?'}).name.replace(/—.*/,'').trim():'';
+      h+=`<div style="display:flex;align-items:stretch">
+        <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:6px;box-shadow:0 2px 8px rgba(232,75,58,.4)">${i+1}</div>
+          ${!isLast?`<div style="width:2px;flex:1;min-height:20px;background:linear-gradient(to bottom,var(--red),rgba(232,75,58,.2))"></div>`:''}
+        </div>
+        <div draggable="true" ondragstart="cpDS(event,'${n.id}')" ondragover="cpDO(event,'${n.id}')" ondrop="cpDR(event,'${n.id}')" ondragend="cpDE(event)"
+          style="flex:1;margin:4px 0 4px 8px;background:var(--sur);border:1px solid ${n.delayed?'rgba(232,75,58,.5)':'var(--bor)'};border-left:3px solid ${n.delayed?'var(--red)':'rgba(232,75,58,.5)'};border-radius:10px;padding:9px 10px;cursor:grab;${n.delayed?'background:rgba(232,75,58,.06);':''}user-select:none">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+            <span style="font-size:14px;color:var(--dim)">☰</span>
+            <div style="font-size:12px;font-weight:800;color:var(--wht);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n.name)}</div>
+            ${n.delayed?`<span style="font-size:9px;font-weight:800;color:var(--red);background:rgba(232,75,58,.15);border:1px solid rgba(232,75,58,.3);border-radius:4px;padding:1px 5px;flex-shrink:0">DELAYED</span>`:''}
+          </div>
+          <div style="font-size:10px;color:var(--dim)">📅 ${fmt(n.start)} → ${fmt(n.end)} · ${n.dur}d · <span style="color:${fl===0?'var(--red)':fl<=5?'var(--amb)':'var(--dim)'}">${fl}d float</span></div>
+          <div style="font-size:9px;margin-top:3px;color:${i===0?'var(--grn)':'var(--dim)'}">${i===0?'⭐ Lead trade — drives entire sequence':`⬆ Follows #${i}: ${esc(prev)}`}</div>
+        </div>
+      </div>`;
+    });
+    h+=`</div><div style="font-size:10px;color:var(--dim);text-align:center;padding:6px 0 12px">Hold & drag to reprioritise</div>`;
+  }
+
+  // Gantt
+  const dpp=3*7,td2=today();
+  const now=new Date(td2),dow=now.getDay();
+  const mon=new Date(now);mon.setDate(now.getDate()-(dow===0?6:dow-1)+(cpOff*7));
+  const wS=mon.toISOString().slice(0,10),wE=addDays(wS,dpp-1);
+  const dates=[];for(let i=0;i<dpp;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);dates.push(d.toISOString().slice(0,10))}
+  const ti=dates.indexOf(td2);
+  const pw=d=>(d/dpp*100).toFixed(2)+'%';
+  const fmW=d=>`${d.getDate()}/${d.getMonth()+1}`;
+  const w1=new Date(mon),w2=new Date(mon),w3=new Date(mon);w2.setDate(w2.getDate()+7);w3.setDate(w3.getDate()+14);
+  const dEl=dates.map(ds=>{const d=new Date(ds);const iT=ds===td2;const iW=d.getDay()===0||d.getDay()===6;return`<div class="gd${iT?' tod':''}${iW?' wk':''}">${DAYS[d.getDay()]}<br>${d.getDate()}</div>`}).join('');
+  const vis=nodes.filter(n=>n.start&&n.end&&n.start<=wE&&n.end>=wS);
+  const crit=vis.filter(n=>n.crit).sort((a,b)=>a.es-b.es);
+  const ncrit=vis.filter(n=>!n.crit).sort((a,b)=>a.es-b.es);
+  const row=n=>{
+    const si=n.start<wS?0:(dates.indexOf(n.start)<0?-1:dates.indexOf(n.start));
+    const eiR=dates.indexOf(n.end);const ei=eiR<0?(n.end>wE?dpp-1:-1):eiR;
+    if(si<0||ei<0)return'';
+    const cols=dates.map((ds,i)=>{const d=new Date(ds);const iW=d.getDay()===0||d.getDay()===6;return`<div class="gc${i===ti?' tod':''}${iW?' wkc':''}"></div>`}).join('');
+    const bc=n.crit?(n.delayed?'var(--red)':'#C0392B'):(n.pri==='high'?'rgba(232,75,58,.25)':n.pri==='medium'?'rgba(245,166,35,.25)':'rgba(76,175,125,.2)');
+    return`<div class="gr" style="${n.crit?'background:rgba(232,75,58,.03)':''}">
+      <div class="gl" style="font-weight:${n.crit?900:600};color:${n.crit?'var(--wht)':'var(--dim)'}" title="${esc(n.name)}">${n.crit?'🔴 ':''}${esc(n.name)}</div>
+      <div class="gg">${cols}<div class="gbars">
+        ${ti>=0?`<div class="todl" style="left:${pw(ti)}"></div>`:''}
+        <div style="position:absolute;height:${n.crit?16:10}px;top:50%;transform:translateY(-50%);border-radius:3px;left:${pw(si)};width:${pw(ei-si+1)};background:${bc};${n.crit?'border:1px solid rgba(232,75,58,.5)':''}"></div>
+      </div></div>
+    </div>`;
+  };
+
+  const nav=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <button onclick="cpOff--;renderCritical()" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--wht);padding:6px 14px;font-size:16px;cursor:pointer">◀</button>
+    <div style="flex:1;text-align:center;font-size:11px;font-weight:800;color:var(--txt)">${cpOff===0?'THIS WEEK':cpOff>0?'+'+cpOff+' WKS':cpOff+' WKS'}</div>
+    <button onclick="cpOff=0;renderCritical()" style="background:var(--amb);border:none;border-radius:8px;color:#111;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer">TODAY</button>
+    <button onclick="cpOff++;renderCritical()" style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;color:var(--wht);padding:6px 14px;font-size:16px;cursor:pointer">▶</button>
+  </div>`;
+  const wH=`<div style="display:flex;padding-left:110px;border-bottom:1px solid var(--bor);background:var(--sur2)">${[w1,w2,w3].map(d=>`<div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--red);padding:3px 0;border-left:1px solid var(--bor)">${fmW(d)}</div>`).join('')}</div>`;
+
+  h+=`<div style="font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--dim);margin:8px 0 6px">📊 GANTT VIEW</div>${nav}<div class="leg"><div class="li"><div class="lb" style="background:var(--red)"></div>Critical</div><div class="li"><div class="lb" style="background:rgba(245,166,35,.3)"></div>Non-critical</div></div>
+  <div class="gw">${wH}<div class="gh">${dEl}</div>
+    ${crit.length?`<div style="padding:4px 8px;font-size:9px;font-weight:800;color:var(--red);background:rgba(232,75,58,.08);border-bottom:1px solid rgba(232,75,58,.2)">⚠ CRITICAL — Push these trades</div>${crit.map(row).join('')}`:''}
+    ${ncrit.length?`<div style="padding:4px 8px;font-size:9px;font-weight:800;color:var(--dim);background:var(--sur2);border-top:1px solid var(--bor);border-bottom:1px solid var(--bor)">NON-CRITICAL</div>${ncrit.map(row).join('')}`:''}
+    ${!crit.length&&!ncrit.length?`<div style="text-align:center;padding:24px;color:var(--dim);font-size:12px">No trades in this window</div>`:''}
+  </div>`;
+  B.innerHTML=h;
+}
+
+function cpDS(e,id){_dragId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>{if(e.currentTarget)e.currentTarget.style.opacity='.4'},0)}
+function cpDO(e,id){e.preventDefault()}
+function cpDR(e,id){e.preventDefault();if(!_dragId||_dragId===id)return;const cpm=cpCalc();if(!cpm)return;const cIds=cpm.chain.map(n=>n.id);const saved=S.cpPri||[];const ord=[];saved.forEach(sid=>{if(cIds.includes(sid))ord.push(sid)});cpm.chain.forEach(n=>{if(!ord.includes(n.id))ord.push(n.id)});const fi=ord.indexOf(_dragId),ti2=ord.indexOf(id);if(fi<0||ti2<0)return;ord.splice(fi,1);ord.splice(ti2,0,_dragId);S.cpPri=ord;save();renderCritical()}
+function cpDE(e){_dragId=null;if(e.currentTarget)e.currentTarget.style.opacity='1'}
+
+// ── 4-WEEK ──────────────────────────────────────────────────────────────
+function getLoc(name){
+  if(/community hub|hub|gym|ameniti|canteen|tilt door|timber floor|rubber floor/i.test(name))return'hub';
+  if(/admin|main block|l1|level 1|first floor|roof|cladding|brick|scaffold|plaster|joinery|window|ceiling|lift|slab|concrete|electrical|mechanical|hydraulic|fire|services|paint|fitout|fit off|floor finish|carpet|waterproof|acoustic/i.test(name))return'admin';
+  return'both';
+}
+function renderLookahead(){
+  const B=document.getElementById('body');
+  const td=today();
+  let h=`<div class="sbr"><button class="sbtn sd" onclick="printLA()">🖨 Print / Save PDF</button><button class="sbtn sa" onclick="emailLA()">✉ Email</button></div>
+  <div style="overflow-x:auto"><table class="lat" style="width:100%;border-collapse:collapse">
+  <thead><tr><th style="width:68px">DATE</th><th>COMMUNITY HUB</th><th>ADMIN (MAIN BLOCK)</th></tr></thead><tbody>`;
+
+  for(let i=0;i<28;i++){
+    const ds=addDays(td,i);const d=new Date(ds);const dow=d.getDay();
+    if(dow===6){h+=`<tr class="wkend"><td colspan="3">Weekend</td></tr>`;continue}
+    if(dow===0)continue;
+    const act=S.trades.filter(t=>t.start&&t.end&&ds>=t.start&&ds<=t.end);
+    const hub=act.filter(t=>getLoc(t.name)==='hub'||getLoc(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    const adm=act.filter(t=>getLoc(t.name)==='admin'||getLoc(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    const dl=`${d.getDate()}-${d.getMonth()+1}-${String(d.getFullYear()).slice(2)}`;
+    h+=`<tr><td style="color:var(--dim);white-space:nowrap">${dl}</td><td>${esc(hub)||'<span style="color:var(--bor)">—</span>'}</td><td>${esc(adm)||'<span style="color:var(--bor)">—</span>'}</td></tr>`;
+  }
+  h+=`</tbody></table></div>`;
+  B.innerHTML=h;
+}
+
+function printLA(){
+  const td=today();let rows='';
+  for(let i=0;i<28;i++){
+    const ds=addDays(td,i);const d=new Date(ds);const dow=d.getDay();
+    if(dow===6){rows+=`<tr><td colspan="3" style="background:#dbeafe;color:#1d4ed8;font-weight:700;padding:5px 8px">Weekend</td></tr>`;continue}
+    if(dow===0)continue;
+    const act=S.trades.filter(t=>t.start&&t.end&&ds>=t.start&&ds<=t.end);
+    const hub=act.filter(t=>getLoc(t.name)==='hub'||getLoc(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    const adm=act.filter(t=>getLoc(t.name)==='admin'||getLoc(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    const dl=`${d.getDate()}-${d.getMonth()+1}-${String(d.getFullYear()).slice(2)}`;
+    rows+=`<tr><td style="padding:5px 8px;color:#374151;white-space:nowrap">${dl}</td><td style="padding:5px 8px">${hub||'—'}</td><td style="padding:5px 8px">${adm||'—'}</td></tr>`;
+  }
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(S.proj)} – PROGRAM LOOK AHEAD</title><style>@page{size:A4 landscape;margin:15mm}body{font-family:Arial,sans-serif;color:#111}table{width:100%;border-collapse:collapse}th{background:#1a1d21;color:#f5a623;padding:7px 10px;font-size:11px;text-align:left}td{border:1px solid #e5e7eb;font-size:11px}tr:nth-child(even) td{background:#f9fafb}.hd{display:flex;align-items:center;border:2px solid #e5e7eb;padding:10px 20px;margin-bottom:16px}.hl{font-size:22px;font-weight:900;margin-right:20px;padding-right:20px;border-right:2px solid #e5e7eb}.hl span{color:#f5a623}.ht{font-size:18px;font-weight:800;flex:1;text-align:center}</style></head><body>
+  <div class="hd"><div class="hl">TULL<span>PRO</span></div><div class="ht">${esc(S.proj)} – PROGRAM LOOK AHEAD</div></div>
+  <p style="font-size:11px;color:#6b7280;margin-bottom:10px">Issued: ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})}</p>
+  <table><thead><tr><th style="width:80px">DATE</th><th>LOCATION: COMMUNITY HUB</th><th>LOCATION: ADMIN (MAIN BLOCK)</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),400);
+}
+
+function emailLA(){
+  const td=today();let body=`PROGRAM LOOK AHEAD\n${S.proj}\nIssued: ${new Date().toLocaleDateString('en-GB')}\n\n`;
+  for(let i=0;i<28;i++){
+    const ds=addDays(td,i);const d=new Date(ds);const dow=d.getDay();
+    if(dow===6){body+='Weekend\n';continue}if(dow===0)continue;
+    const act=S.trades.filter(t=>t.start&&t.end&&ds>=t.start&&ds<=t.end);
+    const hub=act.filter(t=>getLoc(t.name)==='hub'||getLoc(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    const adm=act.filter(t=>getLoc(t.name)==='admin'||getLoc(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    body+=`${d.getDate()}-${d.getMonth()+1} | Hub: ${hub||'—'} | Admin: ${adm||'—'}\n`;
+  }
+  window.open(`mailto:?subject=${encodeURIComponent('Program Look Ahead — '+S.proj)}&body=${encodeURIComponent(body)}`,'_blank');
+}
+
+// ── TRADE CRUD ──────────────────────────────────────────────────────────
+function selSeg(type,val){fSel[type]=val;updateSegs()}
+function updateSegs(){
+  ['high','medium','low'].forEach(v=>{const el=document.querySelector(`#spri [data-v="${v}"]`);if(el)el.className='so'+(fSel.pri===v?' s'+v[0]:'')});
+  ['onsite','upcoming'].forEach(v=>{const el=document.querySelector(`#ssta [data-v="${v}"]`);if(el)el.className='so'+(fSel.sta===v?' s'+v.slice(0,2):'')});
+}
+function openAdd(){editId=null;fSel={pri:'medium',sta:'upcoming'};document.getElementById('tmt').textContent='Add Trade';['fn','fc','fnotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('fs').value=today();['fe','fas','fae'].forEach(id=>document.getElementById(id).value='');document.getElementById('delprev').style.display='none';updateSegs();openM('tm')}
+function openEdit(id){const t=S.trades.find(x=>x.id===id);if(!t)return;editId=id;fSel={pri:t.pri,sta:t.status};document.getElementById('tmt').textContent='Edit Trade';document.getElementById('fn').value=t.name;document.getElementById('fc').value=t.company||'';document.getElementById('fs').value=t.start||'';document.getElementById('fe').value=t.end||'';document.getElementById('fas').value=t.astart||'';document.getElementById('fae').value=t.aend||'';document.getElementById('fnotes').value=t.notes||'';updateDelPrev(t.end,t.aend);updateSegs();openM('tm')}
+function updateDelPrev(pe,ae){const el=document.getElementById('delprev');if(!el)return;if(!ae||!pe){el.style.display='none';return}const d=diff(pe,ae);el.style.display='block';el.style.color=d>0?'var(--red)':d<0?'var(--grn)':'var(--amb)';el.textContent=d>0?`⚠️ ${d} day delay vs contract`:d<0?`✅ ${Math.abs(d)} days ahead`:'✅ On programme'}
+function saveTrade(){const name=document.getElementById('fn').value.trim();if(!name){document.getElementById('fn').style.borderColor='var(--red)';return}document.getElementById('fn').style.borderColor='';const t={id:editId||uid(),name,company:document.getElementById('fc').value.trim(),start:document.getElementById('fs').value,end:document.getElementById('fe').value,astart:document.getElementById('fas').value,aend:document.getElementById('fae').value,pri:fSel.pri,status:fSel.sta,notes:document.getElementById('fnotes').value.trim(),deps:[]};if(editId){const i=S.trades.findIndex(x=>x.id===editId);if(i>=0)S.trades[i]=t}else S.trades.push(t);save();closeM('tm');render()}
+function del2(id){const t=S.trades.find(x=>x.id===id);if(!t)return;confirm2('Remove Trade?',`"${t.name}" will be removed.`,()=>{S.trades=S.trades.filter(x=>x.id!==id);save();render()})}
+
+// ── MODALS ──────────────────────────────────────────────────────────────
+function openM(id){document.getElementById(id).classList.remove('hidden')}
+function closeM(id){document.getElementById(id).classList.add('hidden')}
+function confirm2(title,msg,cb){document.getElementById('ct').textContent=title;document.getElementById('cmsg').textContent=msg;document.getElementById('cok').onclick=()=>{cb();closeM('cm')};openM('cm')}
+
+// ── API / IMPORT ──────────────────────────────────────────────────────────
+function getKey(){try{return localStorage.getItem('tullpro_apikey')||''}catch(e){return''}}
+function saveKey(){const k=document.getElementById('aki').value.trim();if(!k.startsWith('sk-')){document.getElementById('aks').style.color='var(--red)';document.getElementById('aks').textContent='⚠️ Key must start with sk-';return}try{localStorage.setItem('tullpro_apikey',k)}catch(e){}document.getElementById('aks').style.color='var(--grn)';document.getElementById('aks').textContent='✅ Key saved!';setTimeout(()=>closeM('am'),1000)}
+function openImport(){closeMenu();resetImport();document.getElementById('isub').textContent=getKey()?'AI key configured ✅ — tap to select your MS Project PDF':'⚠️ No AI key — set via Menu first';openM('im')}
+function resetImport(){document.getElementById('ist').style.display='none';document.getElementById('irev').style.display='none';document.getElementById('irev').innerHTML='';document.getElementById('pf').value='';const b=document.querySelector('.ibox');if(b)b.style.display='block'}
+function openApiSettings(){closeMenu();document.getElementById('aki').value=getKey()||'';document.getElementById('aks').textContent='';openM('am')}
+
+async function handlePDF(input){
+  const file=input.files[0];if(!file)return;
+  const key=getKey();if(!key){alert('Add your Anthropic API key via Menu → AI Settings first.');return}
+  document.querySelector('.ibox').style.display='none';
+  const ist=document.getElementById('ist'),msg=document.getElementById('imsg'),prog=document.getElementById('iprog');
+  ist.style.display='block';msg.textContent='Reading PDF…';prog.style.width='20%';
+  const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file)});
+  msg.textContent='Sending to AI…';prog.style.width='50%';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:8000,messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:`Extract every construction task. Return ONLY JSON no markdown: {"projectName":"string","tasks":[{"id":"T1","name":"task name","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","priority":"high|medium|low","status":"onsite|upcoming"}]}. Today is ${today()}. status=onsite if started before today, else upcoming. Skip milestones and summary rows.`}]}]})});
+    const data=await resp.json();prog.style.width='85%';
+    if(data.error){msg.textContent='⚠️ API error: '+data.error.message;return}
+    const raw=(data.content||[]).map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
+    const obj=JSON.parse(raw);
+    if(!obj.tasks||!obj.tasks.length){msg.textContent='⚠️ No tasks found';return}
+    prog.style.width='100%';msg.textContent=`Found ${obj.tasks.length} tasks`;
+    window._pImport=obj;
+    let h=`<div style="font-size:11px;color:var(--dim);margin-bottom:8px">Review and tap Import to add to programme</div>`;
+    if(obj.projectName)h+=`<div style="font-size:13px;font-weight:800;margin-bottom:10px">📋 ${esc(obj.projectName)}</div>`;
+    obj.tasks.slice(0,10).forEach(t=>{h+=`<div class="card ${t.priority||'medium'}" style="margin-bottom:6px"><div style="font-size:12px;font-weight:800">${esc(t.name)}</div><div style="font-size:10px;color:var(--dim)">📅 ${fmt(t.startDate)} → ${fmt(t.endDate)}</div></div>`});
+    if(obj.tasks.length>10)h+=`<div style="font-size:11px;color:var(--dim);padding:8px 0">…and ${obj.tasks.length-10} more tasks</div>`;
+    h+=`<button class="btn ba" style="width:100%;margin-top:6px" onclick="doImport()">✅ Import ${obj.tasks.length} Trades</button>`;
+    document.getElementById('irev').style.display='block';document.getElementById('irev').innerHTML=h;
+  }catch(e){msg.textContent='⚠️ Failed: '+e.message}
+}
+function doImport(){const obj=window._pImport;if(!obj)return;if(obj.projectName)S.proj=obj.projectName;obj.tasks.forEach(t=>{S.trades.push({id:uid(),name:t.name,company:'',start:t.startDate,end:t.endDate,astart:'',aend:'',pri:t.priority||'medium',status:t.status||'upcoming',notes:'',deps:[]})});save();updProj();closeM('im');resetImport();sw('list')}
+
+// ── BOOT ──────────────────────────────────────────────────────────────
+load();
+updProj();
+sw('list');
+</script>
+</body>
+</html>
