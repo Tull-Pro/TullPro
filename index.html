@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A1D21">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Tull Pro – Site Programme</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#1A1D21;--surface:#252A31;--surface2:#2E3338;--border:#363C45;
+  --amber:#F5A623;--red:#E84B3A;--green:#4CAF7D;--blue:#4A9EFF;--purple:#9B72CF;
+  --white:#F0F2F5;--dim:#8B95A1;--text:#C8D0DA;
+}
+html,body{height:100%;background:var(--bg);color:var(--white);font-family:'Inter',system-ui,sans-serif;overflow:hidden;}
+#app{height:100%;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;position:relative;z-index:50;}
+.logo{font-size:17px;font-weight:900;letter-spacing:-.5px;}
+.logo span{color:var(--amber);}
+.proj-name{font-size:10px;color:var(--dim);font-weight:600;margin-top:1px;}
+.menu-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
+
+/* DROPDOWN MENU */
+.dropdown{position:absolute;top:100%;right:14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;min-width:200px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;}
+.dd-item{display:flex;align-items:center;gap:10px;padding:13px 16px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--border);}
+.dd-item:last-child{border-bottom:none;}
+.dd-item:active{background:var(--surface2);}
+.dd-icon{font-size:16px;width:20px;text-align:center;}
+.dd-sep{height:1px;background:var(--border);}
+
+/* TABS */
+.tabs{display:flex;padding:8px 14px 0;gap:2px;flex-shrink:0;overflow-x:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:7px 10px;font-size:10px;font-weight:800;letter-spacing:.5px;border-bottom:2px solid transparent;color:var(--dim);cursor:pointer;}
+.tab.active{color:var(--amber);border-color:var(--amber);}
+
+/* BODY */
+.body{flex:1;overflow-y:auto;padding:12px 14px 80px;}
+
+/* STATS */
+.stat-row{display:flex;gap:8px;margin-bottom:12px;}
+.stat{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 10px 8px;}
+.stat-n{font-size:20px;font-weight:900;line-height:1;}
+.stat-l{font-size:9px;font-weight:700;letter-spacing:.6px;color:var(--dim);margin-top:3px;}
+
+/* TRADE CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;position:relative;padding-left:17px;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.card.high::before{background:var(--red);}
+.card.medium::before{background:var(--amber);}
+.card.low::before{background:var(--green);}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:5px;}
+.card-name{font-size:13px;font-weight:800;}
+.badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;}
+.badge{font-size:9px;font-weight:800;letter-spacing:.5px;padding:2px 6px;border-radius:4px;}
+.b-high{background:rgba(232,75,58,.15);color:var(--red);border:1px solid rgba(232,75,58,.3);}
+.b-medium{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);}
+.b-low{background:rgba(76,175,125,.15);color:var(--green);border:1px solid rgba(76,175,125,.3);}
+.b-onsite{background:rgba(76,175,125,.15);color:var(--green);border:1px solid rgba(76,175,125,.3);}
+.b-upcoming{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);}
+.b-critical{background:rgba(232,75,58,.2);color:var(--red);border:1px solid rgba(232,75,58,.4);}
+.card-meta{font-size:11px;color:var(--dim);margin-bottom:7px;line-height:1.6;}
+.card-actions{display:flex;gap:5px;flex-wrap:wrap;}
+.mini{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);cursor:pointer;}
+.mini.red{color:var(--red);border-color:rgba(232,75,58,.3);}
+.mini.green{color:var(--green);border-color:rgba(76,175,125,.3);}
+
+/* GANTT */
+.gantt-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);}
+.g-head{display:flex;padding:6px 0 6px 110px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:2;}
+.g-dcell{flex:1;min-width:26px;font-size:8px;font-weight:700;color:var(--dim);text-align:center;}
+.g-dcell.tod{color:var(--amber);}
+.g-row{display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.04);min-height:34px;}
+.g-row:last-child{border-bottom:none;}
+.g-lbl{width:110px;flex-shrink:0;padding:3px 8px;font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+.g-grid{flex:1;display:flex;position:relative;min-height:34px;}
+.g-col{flex:1;min-width:26px;border-left:1px solid rgba(255,255,255,.04);}
+.g-col.tod{background:rgba(245,166,35,.07);}
+.g-bars{position:absolute;inset:0;display:flex;align-items:center;}
+.g-bar{position:absolute;height:18px;border-radius:3px;display:flex;align-items:center;padding:0 5px;font-size:8px;font-weight:800;overflow:hidden;white-space:nowrap;}
+.g-bar.high{background:rgba(232,75,58,.85);color:#fff;}
+.g-bar.medium{background:rgba(245,166,35,.85);color:#111;}
+.g-bar.low{background:rgba(76,175,125,.85);color:#fff;}
+.g-bar.critical-bar{background:var(--red);box-shadow:0 0 6px rgba(232,75,58,.5);}
+.tod-line{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);opacity:.7;z-index:3;}
+
+/* CRITICAL PATH */
+.cp-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.cp-card.danger{border-color:rgba(232,75,58,.4);background:rgba(232,75,58,.06);}
+.cp-card.good{border-color:rgba(76,175,125,.3);background:rgba(76,175,125,.05);}
+.cp-label{font-size:9px;font-weight:800;letter-spacing:.8px;color:var(--dim);margin-bottom:4px;}
+.cp-val{font-size:20px;font-weight:900;color:var(--white);}
+.cp-sub{font-size:11px;color:var(--dim);margin-top:3px;}
+.float-pill{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;background:rgba(76,175,125,.15);color:var(--green);}
+.float-pill.zero{background:rgba(232,75,58,.15);color:var(--red);}
+
+/* LOOK-AHEAD */
+.la-week{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.la-week-hd{padding:10px 14px;background:var(--surface2);display:flex;justify-content:space-between;align-items:center;}
+.la-week-title{font-size:12px;font-weight:800;}
+.la-week-sub{font-size:10px;color:var(--dim);}
+.la-item{padding:9px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.la-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.la-item-name{font-size:12px;font-weight:700;flex:1;}
+.la-item-dates{font-size:10px;color:var(--dim);}
+
+/* 4-WEEK PRINT BUTTON */
+.share-bar{display:flex;gap:8px;margin-bottom:12px;}
+.share-btn{flex:1;padding:10px;border-radius:9px;border:none;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.3px;}
+.share-btn.amber{background:var(--amber);color:#111;}
+.share-btn.dark{background:var(--surface);color:var(--white);border:1px solid var(--border);}
+
+/* IMPORT */
+.import-box{background:var(--surface);border:2px dashed var(--border);border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:12px;}
+.import-box:active{border-color:var(--amber);}
+.import-icon{font-size:32px;margin-bottom:8px;}
+.import-title{font-size:13px;font-weight:800;margin-bottom:4px;}
+.import-sub{font-size:11px;color:var(--dim);}
+.progress-bar{height:4px;background:var(--surface2);border-radius:2px;margin:12px 0;overflow:hidden;}
+.progress-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .3s;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;padding:20px 16px 40px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;}
+.modal-title{font-size:15px;font-weight:900;margin-bottom:14px;}
+
+/* FORM */
+.f-row{margin-bottom:10px;}
+.f-label{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--dim);margin-bottom:4px;}
+.f-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--white);font-size:13px;padding:9px 12px;outline:none;font-family:inherit;}
+.f-input:focus{border-color:var(--amber);}
+.f-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.seg{display:flex;gap:4px;}
+.seg-o{flex:1;padding:7px 4px;text-align:center;font-size:10px;font-weight:800;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--dim);cursor:pointer;}
+.seg-o.s-high{background:rgba(232,75,58,.2);color:var(--red);border-color:var(--red);}
+.seg-o.s-medium{background:rgba(245,166,35,.2);color:var(--amber);border-color:var(--amber);}
+.seg-o.s-low{background:rgba(76,175,125,.2);color:var(--green);border-color:var(--green);}
+.seg-o.s-onsite{background:rgba(76,175,125,.2);color:var(--green);border-color:var(--green);}
+.seg-o.s-upcoming{background:rgba(245,166,35,.15);color:var(--amber);border-color:var(--amber);}
+.btn-row{display:flex;gap:8px;margin-top:14px;}
+.btn{flex:1;padding:11px;border-radius:9px;border:none;font-size:13px;font-weight:800;cursor:pointer;}
+.btn-amber{background:var(--amber);color:#111;}
+.btn-dark{background:var(--surface2);color:var(--dim);}
+.btn-red{background:var(--red);color:#fff;}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--amber);border:none;color:#111;font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(245,166,35,.4);z-index:10;display:flex;align-items:center;justify-content:center;}
+
+/* EMPTY */
+.empty{text-align:center;padding:44px 20px;color:var(--dim);}
+.empty-icon{font-size:38px;margin-bottom:10px;}
+.empty-t{font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.empty-s{font-size:12px;line-height:1.6;}
+
+.g-col.wknd-col{background:rgba(255,255,255,.02);}
+.g-dcell.wknd{color:rgba(139,149,161,.5);}
+/* Planned vs Actual bars */
+.g-bar-planned{position:absolute;height:10px;top:5px;border-radius:3px;opacity:.45;display:flex;align-items:center;overflow:hidden;}
+.g-bar-actual{position:absolute;height:10px;bottom:5px;border-radius:3px;display:flex;align-items:center;padding:0 4px;font-size:7px;font-weight:800;overflow:hidden;white-space:nowrap;}
+.g-bar-actual.delayed{box-shadow:0 0 6px rgba(232,75,58,.6);}
+.delay-tag{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(232,75,58,.2);color:var(--red);border:1px solid rgba(232,75,58,.3);}
+.early-tag{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:6px;background:rgba(76,175,125,.15);color:var(--green);border:1px solid rgba(76,175,125,.3);}
+.legend-row{display:flex;gap:12px;align-items:center;margin-bottom:8px;padding:8px 10px;background:var(--surface);border-radius:8px;border:1px solid var(--border);}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--dim);}
+.leg-box{width:20px;height:6px;border-radius:2px;}
+.impact-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.impact-icon{font-size:18px;}
+.impact-text{font-size:11px;line-height:1.5;}
+.impact-text strong{color:var(--white);}
+.hidden{display:none!important;}
+textarea.f-input{min-height:70px;resize:none;}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- MAIN APP -->
+  <div id="main-app" style="display:flex;flex-direction:column;height:100%;">
+    <div class="header">
+      <div>
+        <div class="logo">TULL<span>PRO</span></div>
+        <div class="proj-name" id="proj-display">No project loaded</div>
+      </div>
+      <button class="menu-btn" onclick="toggleMenu()">☰ MENU</button>
+      <div class="dropdown hidden" id="dropdown">
+        <div class="dd-item" onclick="openRenameProject()"><span class="dd-icon">✏️</span>Edit Project Name</div>
+        <div class="dd-item" onclick="openImportPdf()"><span class="dd-icon">📄</span>Import MS Project PDF</div>
+        <div class="dd-item" onclick="openApiSettings()"><span class="dd-icon">🔑</span>AI Settings</div>
+        <div class="dd-item" onclick="newProject()"><span class="dd-icon">➕</span>New Project</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="tab-list" onclick="switchTab('list')">TRADES</div>
+      <div class="tab" id="tab-gantt" onclick="switchTab('gantt')">PROGRAMME</div>
+      <div class="tab" id="tab-critical" onclick="switchTab('critical')">CRITICAL PATH</div>
+      <div class="tab" id="tab-lookahead" onclick="switchTab('lookahead')">4-WEEK</div>
+    </div>
+    <div class="body" id="main-body"></div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openAddModal()">＋</button>
+
+<!-- Add/Edit Trade Modal -->
+<div class="modal-bg hidden" id="trade-modal" onclick="closeModalBg(event,'trade-modal')">
+  <div class="modal">
+    <div class="modal-title" id="trade-modal-title">Add Trade</div>
+    <div class="f-row"><div class="f-label">TRADE NAME</div><input class="f-input" id="f-name" placeholder="e.g. Concrete, Electrical…" autocomplete="off"></div>
+    <div class="f-row"><div class="f-label">COMPANY / SUBCONTRACTOR</div><input class="f-input" id="f-company" placeholder="Optional"></div>
+    <div class="f-2">
+      <div><div class="f-label">START DATE</div><input class="f-input" id="f-start" type="date"></div>
+      <div><div class="f-label">END DATE</div><input class="f-input" id="f-end" type="date"></div>
+    </div>
+    <div class="f-row"><div class="f-label">PRIORITY</div>
+      <div class="seg" id="seg-pri">
+        <div class="seg-o" data-v="high" onclick="selSeg('pri','high')">HIGH</div>
+        <div class="seg-o" data-v="medium" onclick="selSeg('pri','medium')">MED</div>
+        <div class="seg-o" data-v="low" onclick="selSeg('pri','low')">LOW</div>
+      </div>
+    </div>
+    <div class="f-row"><div class="f-label">STATUS</div>
+      <div class="seg" id="seg-status">
+        <div class="seg-o" data-v="onsite" onclick="selSeg('status','onsite')">ON SITE</div>
+        <div class="seg-o" data-v="upcoming" onclick="selSeg('status','upcoming')">UPCOMING</div>
+      </div>
+    </div>
+    <div class="f-row"><div class="f-label">NOTES</div><textarea class="f-input" id="f-notes" placeholder="Any notes…"></textarea></div>
+    <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+    <div style="font-size:10px;font-weight:800;letter-spacing:.6px;color:var(--amber);margin-bottom:10px;">📍 ACTUAL / FORECAST (ON SITE)</div>
+    <div class="f-2">
+      <div><div class="f-label">ACTUAL START</div><input class="f-input" id="f-astart" type="date" placeholder="If started"></div>
+      <div><div class="f-label">FORECAST FINISH</div><input class="f-input" id="f-aend" type="date" placeholder="Anticipated end"></div>
+    </div>
+    <div id="f-delay-preview" style="font-size:11px;padding:8px 10px;border-radius:8px;background:var(--surface2);display:none;margin-bottom:4px;"></div>
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="closeModal('trade-modal')">Cancel</button>
+      <button class="btn btn-amber" onclick="saveTrade()">Save Trade</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rename Project Modal -->
+<div class="modal-bg hidden" id="rename-modal" onclick="closeModalBg(event,'rename-modal')">
+  <div class="modal">
+    <div class="modal-title">Edit Project Name</div>
+    <div class="f-row"><div class="f-label">PROJECT NAME</div><input class="f-input" id="rename-input" placeholder="e.g. Riverside Development Stage 2"></div>
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="closeModal('rename-modal')">Cancel</button>
+      <button class="btn btn-amber" onclick="saveProjectName()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import PDF Modal -->
+<div class="modal-bg hidden" id="import-modal" onclick="closeModalBg(event,'import-modal')">
+  <div class="modal">
+    <div class="modal-title">Import MS Project PDF</div>
+    <div id="import-body">
+      <div class="import-box" onclick="document.getElementById('pdf-file').click()">
+        <div class="import-icon">📄</div>
+        <div class="import-title">Tap to select PDF</div>
+        <div class="import-sub">Export your programme from MS Project or Primavera as a PDF, then upload it here. AI will extract all trades and dates automatically.</div>
+      </div>
+      <input type="file" id="pdf-file" accept="application/pdf" style="display:none" onchange="handlePdfUpload(this)">
+      <div id="import-status" style="display:none;">
+        <div id="import-msg" style="font-size:13px;font-weight:700;margin-bottom:8px;text-align:center;"></div>
+        <div class="progress-bar"><div class="progress-fill" id="import-progress" style="width:0%"></div></div>
+      </div>
+      <div id="import-review" style="display:none;"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="closeModal('import-modal');resetImport()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-bg hidden" id="api-modal" onclick="closeModalBg(event,'api-modal')">
+  <div class="modal">
+    <div class="modal-title">🔑 AI Settings</div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:14px;line-height:1.6;">
+      An Anthropic API key lets the app read your MS Project PDFs automatically using AI. Get a free key at <strong style="color:var(--amber);">console.anthropic.com</strong> → API Keys → Create Key.
+    </div>
+    <div class="f-row">
+      <div class="f-label">ANTHROPIC API KEY</div>
+      <input class="f-input" id="api-key-input" type="password" placeholder="sk-ant-…" autocomplete="off">
+    </div>
+    <div id="api-key-status" style="font-size:11px;margin-bottom:8px;"></div>
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="closeModal('api-modal')">Cancel</button>
+      <button class="btn btn-amber" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-bg hidden" id="confirm-modal">
+  <div class="modal">
+    <div class="modal-title" id="confirm-title">Are you sure?</div>
+    <div style="font-size:13px;color:var(--dim);margin-bottom:20px;" id="confirm-msg"></div>
+    <div class="btn-row">
+      <button class="btn btn-dark" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="btn btn-red" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STORAGE ──────────────────────────────────────────────────────────
+const SK = 'tullpro_v3';
+let state = { trades:[], projectName:'My Project', loggedIn:false };
+
+function saveState(){ try{ localStorage.setItem(SK, JSON.stringify(state)); }catch(e){} }
+function loadState(){
+  try{
+    const d = localStorage.getItem(SK);
+    if(d){ const p=JSON.parse(d); state={...state,...p}; }
+  }catch(e){}
+}
+
+// ── MENU ──────────────────────────────────────────────────────────────
+let menuOpen=false;
+function toggleMenu(){
+  menuOpen=!menuOpen;
+  document.getElementById('dropdown').classList.toggle('hidden',!menuOpen);
+}
+function closeMenu(){
+  menuOpen=false;
+  document.getElementById('dropdown').classList.add('hidden');
+}
+document.addEventListener('click', e=>{
+  if(menuOpen && !e.target.closest('.header')) closeMenu();
+});
+
+function openRenameProject(){ closeMenu(); document.getElementById('rename-input').value=state.projectName; openModal('rename-modal'); }
+function saveProjectName(){
+  const v=document.getElementById('rename-input').value.trim();
+  if(v){ state.projectName=v; saveState(); updateProjDisplay(); }
+  closeModal('rename-modal');
+}
+function updateProjDisplay(){ document.getElementById('proj-display').textContent=state.projectName||'No project'; }
+
+function newProject(){
+  closeMenu();
+  showConfirm('Start New Project?','This will clear all current trades. You can import a new MS Project PDF after.', ()=>{
+    state.trades=[]; state.projectName='New Project'; saveState(); updateProjDisplay(); render();
+  });
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+let currentTab='list';
+function switchTab(tab){
+  currentTab=tab;
+  if(tab==='gantt') ganttOffset=0;
+  if(tab==='critical') cpOffset=0;
+  ['list','gantt','critical','lookahead'].forEach(t=>{
+    document.getElementById('tab-'+t).className='tab'+(t===tab?' active':'');
+  });
+  document.getElementById('fab').classList.toggle('hidden', tab!=='list');
+  render();
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────────
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(s){ if(!s)return'—'; const[y,m,d]=s.split('-'); return d+'/'+m+'/'+y.slice(2); }
+function addDays(dateStr, n){
+  const d=new Date(dateStr); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10);
+}
+function daysBetween(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── RENDER ──────────────────────────────────────────────────────────────
+function render(){
+  if(currentTab==='list') renderList();
+  else if(currentTab==='gantt') renderGantt();
+  else if(currentTab==='critical') renderCritical();
+  else if(currentTab==='lookahead') renderLookahead();
+}
+
+// ── TRADES LIST ──────────────────────────────────────────────────────────
+let tradeSearch='';
+let showCompleted=false;
+
+function renderList(){
+  const body=document.getElementById('main-body');
+  const today=todayStr();
+
+  // Split trades: active = end >= today, completed = end < today
+  const active=state.trades.filter(t=>!t.end||t.end>=today);
+  const completed=state.trades.filter(t=>t.end&&t.end<today);
+
+  // Stats based on active only
+  const on=active.filter(t=>t.status==='onsite');
+  const up=active.filter(t=>t.status==='upcoming');
+  const hi=active.filter(t=>t.pri==='high');
+
+  let h=`<div class="stat-row">
+    <div class="stat"><div class="stat-n" style="color:var(--green)">${on.length}</div><div class="stat-l">ON SITE</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--amber)">${up.length}</div><div class="stat-l">UPCOMING</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--red)">${hi.length}</div><div class="stat-l">HIGH PRI</div></div>
+  </div>`;
+
+  // Search bar
+  h+=`<div style="position:relative;margin-bottom:10px;">
+    <span style="position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--dim);">🔍</span>
+    <input id="trade-search-input" class="f-input" style="padding-left:32px;" placeholder="Search trades…" value="${esc(tradeSearch)}" oninput="tradeSearch=this.value;renderList()" autocomplete="off">
+    ${tradeSearch?`<button onclick="tradeSearch='';renderList()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;">✕</button>`:''}
+  </div>`;
+
+  if(!state.trades.length){
+    h+=`<div class="empty"><div class="empty-icon">🏗️</div><div class="empty-t">No trades yet</div><div class="empty-s">Tap ＋ to add your first trade, or use <strong>Menu → Import MS Project PDF</strong> to load a programme automatically.</div></div>`;
+    body.innerHTML=h; return;
+  }
+
+  // Filter by search
+  const q=tradeSearch.toLowerCase().trim();
+  const filterFn=t=>!q||t.name.toLowerCase().includes(q)||(t.company||'').toLowerCase().includes(q);
+
+  // Sort active chronologically by start date
+  const sortedActive=[...active].filter(filterFn).sort((a,b)=>{
+    if(!a.start&&!b.start) return 0;
+    if(!a.start) return 1;
+    if(!b.start) return -1;
+    return a.start.localeCompare(b.start);
+  });
+
+  const sortedCompleted=[...completed].filter(filterFn).sort((a,b)=>b.end.localeCompare(a.end));
+
+  // Group active by: On Site now (started, not ended) vs Upcoming
+  const currentlyOnsite=sortedActive.filter(t=>t.start<=today&&(!t.end||t.end>=today));
+  const upcoming=sortedActive.filter(t=>t.start>today);
+  const noDate=sortedActive.filter(t=>!t.start);
+
+  const tradeCard=t=>{
+    const isDelayed=t.aend&&t.aend>t.end;
+    const isEarly=t.aend&&t.aend<t.end;
+    const delayDays=t.aend&&t.end?daysBetween(t.end,t.aend):0;
+    const delayBadge=isDelayed?`<span class="badge" style="background:rgba(232,75,58,.15);color:var(--red);border:1px solid rgba(232,75,58,.3);">+${delayDays}d</span>`
+      :isEarly?`<span class="badge" style="background:rgba(76,175,125,.15);color:var(--green);border:1px solid rgba(76,175,125,.3);">${delayDays}d early</span>`:'';
+    return `<div class="card ${t.pri}">
+      <div class="card-top">
+        <div class="card-name">${esc(t.name)}</div>
+        <div class="badges"><span class="badge b-${t.pri}">${t.pri.toUpperCase()}</span>${delayBadge}</div>
+      </div>
+      <div class="card-meta">
+        ${t.start?`📅 ${fmtDate(t.start)} → ${fmtDate(t.end)}`:'<span style="color:var(--dim);font-style:italic;">No dates set</span>'}
+        ${t.aend?`&nbsp;·&nbsp; <span style="color:${isDelayed?'var(--red)':isEarly?'var(--green)':'var(--blue)'};">Forecast: ${fmtDate(t.aend)}</span>`:''}
+        ${t.company?`<br>🏢 ${esc(t.company)}`:''}
+        ${t.notes?`<br>📝 ${esc(t.notes.slice(0,50))}${t.notes.length>50?'…':''}`:''}
+      </div>
+      <div class="card-actions">
+        <button class="mini" onclick="openEdit('${t.id}')">✏️ Edit</button>
+        <button class="mini red" onclick="confirmDelete('${t.id}')">🗑</button>
+      </div>
+    </div>`;
+  };
+
+  const sectionHead=(label,count,color='var(--dim)')=>
+    `<div style="font-size:9px;font-weight:800;letter-spacing:.7px;color:${color};margin:12px 0 6px;display:flex;align-items:center;gap:6px;">
+      <span>${label}</span><span style="background:var(--surface2);border-radius:4px;padding:1px 6px;color:var(--dim);">${count}</span>
+    </div>`;
+
+  if(!sortedActive.length&&!q){
+    h+=`<div class="empty"><div class="empty-icon">✅</div><div class="empty-t">All trades complete</div><div class="empty-s">No active or upcoming trades remaining.</div></div>`;
+  } else if(!sortedActive.length&&q){
+    h+=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-t">No results for "${esc(q)}"</div><div class="empty-s">Try a different search term.</div></div>`;
+  } else {
+    if(currentlyOnsite.length){
+      h+=sectionHead('ON SITE NOW',currentlyOnsite.length,'var(--green)');
+      currentlyOnsite.forEach(t=>{ h+=tradeCard(t); });
+    }
+    if(upcoming.length){
+      h+=sectionHead('UPCOMING',upcoming.length,'var(--amber)');
+      upcoming.forEach(t=>{ h+=tradeCard(t); });
+    }
+    if(noDate.length){
+      h+=sectionHead('NO DATE SET',noDate.length);
+      noDate.forEach(t=>{ h+=tradeCard(t); });
+    }
+  }
+
+  // Completed section toggle
+  if(sortedCompleted.length){
+    h+=`<div style="margin-top:14px;">
+      <button onclick="showCompleted=!showCompleted;renderList()" style="width:100%;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--dim);font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.4px;">
+        ${showCompleted?'▲ HIDE':'▼ SHOW'} COMPLETED TRADES (${sortedCompleted.length})
+      </button>
+    </div>`;
+    if(showCompleted){
+      h+=`<div style="opacity:.65;">`;
+      h+=sectionHead('COMPLETED / PAST',sortedCompleted.length);
+      sortedCompleted.forEach(t=>{ h+=tradeCard(t); });
+      h+=`</div>`;
+    }
+  }
+
+  body.innerHTML=h;
+  // Restore focus if searching
+  if(tradeSearch){
+    const inp=document.getElementById('trade-search-input');
+    if(inp){ inp.focus(); inp.setSelectionRange(inp.value.length,inp.value.length); }
+  }
+}
+
+// ── GANTT ──────────────────────────────────────────────────────────────
+let ganttOffset=0;
+const GANTT_WEEKS=3;
+
+function renderGantt(){
+  const body=document.getElementById('main-body');
+  const wd=state.trades.filter(t=>t.start&&t.end);
+  if(!wd.length){body.innerHTML=`<div class="empty"><div class="empty-icon">📊</div><div class="empty-t">No dates set</div><div class="empty-s">Add start and end dates to your trades to see the programme chart.</div></div>`;return;}
+
+  const today=todayStr();
+  const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const totalDays=GANTT_WEEKS*7;
+
+  // Window start = Monday of current week + offset
+  const now=new Date(today);
+  const dow=now.getDay();
+  const monday=new Date(now); monday.setDate(now.getDate()-(dow===0?6:dow-1)+(ganttOffset*7));
+  const winStart=monday.toISOString().slice(0,10);
+  const winEnd=addDays(winStart,totalDays-1);
+
+  const dayDates=[];
+  for(let i=0;i<totalDays;i++){
+    const d=new Date(monday); d.setDate(monday.getDate()+i);
+    dayDates.push(d.toISOString().slice(0,10));
+  }
+  const todayIdx=dayDates.indexOf(today);
+
+  // Trades visible in window
+  const visible=wd.filter(t=>t.start<=winEnd&&t.end>=winStart)
+    .sort((a,b)=>a.start.localeCompare(b.start));
+
+  // Compute project impact
+  const delayed=wd.filter(t=>t.aend&&t.aend>t.end);
+  const early=wd.filter(t=>t.aend&&t.aend<t.end);
+  const contractEnd=wd.reduce((a,t)=>t.end>a?t.end:a,'');
+  const forecastEnd=wd.reduce((a,t)=>{const e=t.aend||t.end; return e>a?e:a;},'');
+  const overallDelay=contractEnd&&forecastEnd?daysBetween(contractEnd,forecastEnd):0;
+
+  // Week labels
+  const fmtWk=d=>`${d.getDate()}/${d.getMonth()+1}`;
+  const w1=new Date(monday);
+  const w2=new Date(monday); w2.setDate(w2.getDate()+7);
+  const w3=new Date(monday); w3.setDate(w3.getDate()+14);
+
+  // Nav bar
+  const navBar=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <button onclick="ganttOffset--;renderGantt()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:6px 14px;font-size:16px;font-weight:800;cursor:pointer;">◀</button>
+    <div style="flex:1;text-align:center;font-size:11px;font-weight:800;color:var(--text);">${ganttOffset===0?'THIS WEEK':ganttOffset>0?'+'+ganttOffset+' WKS':ganttOffset+' WKS'}</div>
+    <button onclick="ganttOffset=0;renderGantt()" style="background:var(--amber);border:none;border-radius:8px;color:#111;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;">TODAY</button>
+    <button onclick="ganttOffset++;renderGantt()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:6px 14px;font-size:16px;font-weight:800;cursor:pointer;">▶</button>
+  </div>`;
+
+  // Impact banner
+  let impactHtml='';
+  if(overallDelay>0){
+    impactHtml=`<div class="impact-bar" style="border-color:rgba(232,75,58,.4);background:rgba(232,75,58,.07);">
+      <div class="impact-icon">⚠️</div>
+      <div class="impact-text"><strong>${overallDelay} day delay to project completion</strong><br>Contract: ${fmtDate(contractEnd)} → Forecast: ${fmtDate(forecastEnd)} &nbsp;·&nbsp; ${delayed.length} trade${delayed.length!==1?'s':''} running late</div>
+    </div>`;
+  } else if(overallDelay<0){
+    impactHtml=`<div class="impact-bar" style="border-color:rgba(76,175,125,.3);background:rgba(76,175,125,.06);">
+      <div class="impact-icon">✅</div>
+      <div class="impact-text"><strong>${Math.abs(overallDelay)} days ahead of programme</strong><br>Forecast completion: ${fmtDate(forecastEnd)}</div>
+    </div>`;
+  } else if(delayed.length===0&&early.length===0){
+    impactHtml=`<div class="impact-bar">
+      <div class="impact-icon">📋</div>
+      <div class="impact-text"><strong>No actuals entered yet</strong><br>Tap ✏️ Edit on any trade to enter actual start &amp; forecast finish</div>
+    </div>`;
+  } else {
+    impactHtml=`<div class="impact-bar" style="border-color:rgba(76,175,125,.3);background:rgba(76,175,125,.06);">
+      <div class="impact-icon">✅</div>
+      <div class="impact-text"><strong>On programme</strong><br>${early.length} trade${early.length!==1?'s':''} ahead · Contract completion: ${fmtDate(contractEnd)}</div>
+    </div>`;
+  }
+
+  // Legend
+  const legend=`<div class="legend-row">
+    <div class="leg-item"><div class="leg-box" style="background:rgba(245,166,35,.4);"></div>Contract</div>
+    <div class="leg-item"><div class="leg-box" style="background:var(--amber);"></div>Forecast/Actual</div>
+    <div class="leg-item"><div class="leg-box" style="background:var(--red);"></div>Delayed</div>
+    <div class="leg-item"><div class="leg-box" style="background:var(--green);"></div>Early</div>
+  </div>`;
+
+  // Day headers
+  let dayHeads='';
+  dayDates.forEach(ds=>{
+    const d=new Date(ds);
+    const isToday=ds===today;
+    const isWknd=d.getDay()===0||d.getDay()===6;
+    dayHeads+=`<div class="g-dcell${isToday?' tod':''}${isWknd?' wknd':''}">${DAYS[d.getDay()]}<br>${d.getDate()}</div>`;
+  });
+
+  // Week header
+  const weekHead=`<div style="display:flex;padding-left:110px;border-bottom:1px solid var(--border);background:var(--surface2);">
+    <div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--amber);padding:3px 0;border-left:1px solid var(--border);">${fmtWk(w1)}</div>
+    <div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--amber);padding:3px 0;border-left:1px solid var(--border);">${fmtWk(w2)}</div>
+    <div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--amber);padding:3px 0;border-left:1px solid var(--border);">${fmtWk(w3)}</div>
+  </div>`;
+
+  // Rows — dual bars
+  let rows='';
+  if(!visible.length){
+    rows=`<div style="text-align:center;padding:28px;color:var(--dim);font-size:12px;">No trades in this window — use ◀ ▶ to navigate.</div>`;
+  } else {
+    visible.forEach(t=>{
+      // Planned bar indices (clamped to window)
+      const psi=Math.max(0, t.start<winStart ? 0 : dayDates.indexOf(t.start));
+      const peiRaw=dayDates.indexOf(t.end);
+      const pei=peiRaw<0 ? (t.end>winEnd?totalDays-1:-1) : peiRaw;
+      if(pei<0) return;
+
+      // Actual bar indices
+      const hasActual=!!(t.aend);
+      let asi=-1,aei=-1;
+      if(hasActual){
+        const aStartDate=t.astart||t.start;
+        asi=Math.max(0, aStartDate<winStart ? 0 : (dayDates.indexOf(aStartDate)<0?-1:dayDates.indexOf(aStartDate)));
+        const aeiRaw=dayDates.indexOf(t.aend);
+        aei=aeiRaw<0 ? (t.aend>winEnd?totalDays-1:aei) : aeiRaw;
+      }
+
+      const isDelayed=hasActual&&t.aend>t.end;
+      const isEarly=hasActual&&t.aend<t.end;
+      const delayDays=hasActual?daysBetween(t.end,t.aend):0;
+
+      // Grid cols
+      let cols='';
+      dayDates.forEach((ds,i)=>{
+        const d=new Date(ds);
+        const isWknd=d.getDay()===0||d.getDay()===6;
+        cols+=`<div class="g-col${i===todayIdx?' tod':''}${isWknd?' wknd-col':''}"></div>`;
+      });
+
+      const pct=i=>(i/totalDays*100).toFixed(2)+'%';
+      const pWid=((pei-psi+1)/totalDays*100).toFixed(2)+'%';
+
+      const barColor=t.pri==='high'?'var(--red)':t.pri==='medium'?'var(--amber)':'var(--green)';
+      const actualColor=isDelayed?'var(--red)':isEarly?'var(--green)':'var(--blue)';
+
+      const delayLabel=isDelayed?`<span class="delay-tag">+${delayDays}d</span>`:isEarly?`<span class="early-tag">${delayDays}d</span>`:'';
+
+      rows+=`<div class="g-row" style="min-height:42px;">
+        <div class="g-lbl" style="font-size:10px;" title="${esc(t.name)}">${esc(t.name)}${delayLabel}</div>
+        <div class="g-grid">${cols}
+          <div class="g-bars">
+            ${todayIdx>=0?`<div class="tod-line" style="left:${pct(todayIdx)}"></div>`:''}
+            <div class="g-bar-planned" style="left:${pct(psi)};width:${pWid};background:${barColor};"></div>
+            ${hasActual&&asi>=0&&aei>=0?`<div class="g-bar-actual${isDelayed?' delayed':''}" style="left:${pct(asi)};width:${((aei-asi+1)/totalDays*100).toFixed(2)}%;background:${actualColor};">${esc(t.name.split(' ')[0])}</div>`:''}
+          </div>
+        </div>
+      </div>`;
+    });
+  }
+
+  body.innerHTML=navBar+impactHtml+legend+`<div class="gantt-wrap">${weekHead}<div class="g-head" style="padding-left:110px;">${dayHeads}</div>${rows}</div>`;
+}
+
+
+// ── CRITICAL PATH ──────────────────────────────────────────────────────────
+// Construction logic dependency rules
+// Each rule: { successor: /regex/, predecessors: [/regex/, ...] }
+const CONSTRUCTION_LOGIC = [
+  // Weather tight before internal works
+  { s:/rough.?in|plaster|sheet|lining|ceiling|joinery|fit.?off|fit.?out|services.?fit|paint|floor.?finish|carpet|acoustic|waterproof|vinyl/i,
+    p:[/roofing|roof.?sheet|cladding|brick.?veneer|facade|weather/i] },
+  // Roof before roofing finishes
+  { s:/flashing|gutter|parapet|skylight/i, p:[/roofing|roof.?sheet/i] },
+  // Structure before cladding
+  { s:/cladding|brick.?veneer|facade|sarking|external.?wall.?fram/i,
+    p:[/structural.?steel|steel.?column|steel.?beam|concrete.?struct|slab|first.?floor/i] },
+  // Slab before structural steel
+  { s:/structural.?steel|steel.?column/i, p:[/slab|ground.?floor.?slab|pour/i] },
+  // Piling before slab
+  { s:/slab|ground.?floor|excavat|earthwork|cut.?and.?fill/i, p:[/piling/i] },
+  // Piling before lift pit
+  { s:/lift.?pit/i, p:[/piling/i] },
+  // Frame/stud before services rough in
+  { s:/rough.?in|services.?rough/i, p:[/wall.?setout|metal.?stud|wall.?fram|stud.?install/i] },
+  // Rough in before plaster/sheet
+  { s:/sheet.?plaster|plaster.?wall|sheet.?ceil|wall.?lining/i,
+    p:[/rough.?in|services.?rough/i] },
+  // Plaster stop before plaster sand
+  { s:/plaster.*sand|stop.?and.?sand/i, p:[/sheet.?plaster|plaster.?wall/i] },
+  // Stop before paint
+  { s:/paint|undercoat/i, p:[/stop.?and.?sand|plaster.*sand|seal.*plaster|defect.*plaster/i] },
+  // Paint before joinery install
+  { s:/install.?joinery|joinery.*install/i, p:[/paint/i] },
+  // Joinery before fit off
+  { s:/fit.?off|services.?fit/i, p:[/install.?joinery|joinery.*install/i] },
+  // Fit off before floor finishes
+  { s:/floor.?finish|carpet|vinyl|timber.?floor.*install/i, p:[/fit.?off|services.?fit/i] },
+  // Waterproof before floor finishes in wet areas
+  { s:/vinyl.*wet|floor.*wet/i, p:[/waterproof/i] },
+  // Scaffold before cladding upper
+  { s:/brick.?veneer.*upper|upper.*cladding|upper.*brick/i, p:[/scaffold/i] },
+  // Concrete structure before first floor
+  { s:/first.?floor|bondek|first.?floor.?slab/i, p:[/ground.?floor.?slab|concrete.?struct/i] },
+  // Lift shaft before lift install
+  { s:/lift.*install|installation.*lift/i, p:[/lift.?shaft|lift.?pit/i] },
+  // External works after building complete
+  { s:/asphalt|landscap|soft.?land|planting|brick.?seat/i,
+    p:[/cladding|brick.?veneer|external.?slab/i] },
+  // Commissioning after fitout
+  { s:/commissioning|testing.*commission|commission/i,
+    p:[/fit.?off|services.?fit|floor.?finish/i] },
+  // Final clean after commissioning
+  { s:/final.?clean|defecting|OP.?application|practical.?complet/i,
+    p:[/commissioning|testing/i] },
+  // Precast before first floor
+  { s:/first.?floor/i, p:[/precast|lift.?core/i] },
+  // Demolition before structure
+  { s:/structure|piling|earthwork|cut.?and.?fill/i, p:[/demolit/i] },
+  // Services rough in before ceiling frame
+  { s:/ceiling.?frame|frame.?ceiling/i, p:[/rough.?in|services.?rough/i] },
+  // Ceiling frame before ceiling tiles/lining
+  { s:/ceiling.?tile|ceiling.?lin|sheet.?ceil/i, p:[/ceiling.?frame|frame.?ceiling/i] },
+];
+
+function matchesAny(name, patterns){
+  return patterns.some(p=>p.test(name));
+}
+
+function computeLogicalCPM(){
+  const trades = state.trades.filter(t=>t.start&&t.end);
+  if(!trades.length) return null;
+
+  // Build nodes with actual/forecast dates
+  const nodes = trades.map(t=>({
+    id:t.id, name:t.name, pri:t.pri, status:t.status,
+    start:t.astart||t.start, end:t.aend||t.end,
+    planStart:t.start, planEnd:t.end,
+    dur:daysBetween(t.astart||t.start, t.aend||t.end)+1,
+    logicDeps:[], isCritical:false, float:999,
+    delayed:!!(t.aend&&t.aend>t.end)
+  }));
+
+  const byId={};
+  nodes.forEach(n=>byId[n.id]=n);
+
+  // Apply construction logic rules — find predecessor nodes for each node
+  nodes.forEach(succ=>{
+    CONSTRUCTION_LOGIC.forEach(rule=>{
+      if(!matchesAny(succ.name,[rule.s])) return;
+      // Find all nodes that match predecessor patterns and finish before successor starts
+      nodes.forEach(pred=>{
+        if(pred.id===succ.id) return;
+        if(!matchesAny(pred.name, rule.p)) return;
+        // Only add if predecessor ends before or overlaps with successor start
+        if(pred.end<=succ.end){
+          if(!succ.logicDeps.includes(pred.id)) succ.logicDeps.push(pred.id);
+        }
+      });
+    });
+  });
+
+  // Forward pass — compute Early Start / Early Finish using logic deps
+  const BASE='2020-01-01';
+  nodes.forEach(n=>{
+    n.es=daysBetween(BASE,n.start);
+    n.ef=n.es+n.dur-1;
+  });
+
+  // Topological sort & forward pass with deps
+  const visited=new Set();
+  function forwardPass(n){
+    if(visited.has(n.id)) return;
+    n.logicDeps.forEach(depId=>{ if(byId[depId]) forwardPass(byId[depId]); });
+    visited.add(n.id);
+    if(n.logicDeps.length){
+      const predEF=Math.max(...n.logicDeps.map(id=>byId[id]?byId[id].ef:-Infinity));
+      if(predEF>n.es){ n.es=predEF+1; n.ef=n.es+n.dur-1; }
+    }
+  }
+  nodes.forEach(n=>forwardPass(n));
+
+  // Backward pass
+  const projEnd=Math.max(...nodes.map(n=>n.ef));
+  nodes.forEach(n=>{ n.lf=projEnd; n.ls=n.lf-n.dur+1; n.float=n.ls-n.es; });
+
+  // Propagate backward through deps
+  const visited2=new Set();
+  function backwardPass(n){
+    if(visited2.has(n.id)) return;
+    visited2.add(n.id);
+    n.logicDeps.forEach(depId=>{
+      const pred=byId[depId]; if(!pred) return;
+      const newLF=n.ls-1;
+      if(newLF<pred.lf){ pred.lf=newLF; pred.ls=pred.lf-pred.dur+1; pred.float=pred.ls-pred.es; }
+      backwardPass(pred);
+    });
+  }
+  const endNodes=nodes.filter(n=>!nodes.some(m=>m.logicDeps.includes(n.id)));
+  endNodes.forEach(n=>backwardPass(n));
+
+  // Mark critical: float <= 0 OR delayed AND on critical chain
+  nodes.forEach(n=>{ n.isCritical=n.float<=2; }); // <=2 days float = critical
+
+  // Build critical chain sequence
+  const criticalChain=nodes.filter(n=>n.isCritical)
+    .sort((a,b)=>a.es-b.es);
+
+  nodes.sort((a,b)=>a.es-b.es);
+  return { nodes, criticalChain, projEnd };
+}
+
+let cpOffset=0;
+const CP_WEEKS=3;
+
+function renderCritical(){
+  const body=document.getElementById('main-body');
+  const cpm=computeLogicalCPM();
+  if(!cpm||!cpm.nodes.length){
+    body.innerHTML=`<div class="empty"><div class="empty-icon">🔴</div><div class="empty-t">No data for Critical Path</div><div class="empty-s">Add trades with start and end dates to analyse the critical path.</div></div>`;
+    return;
+  }
+  const {nodes,criticalChain}=cpm;
+  const today=todayStr();
+  const projFinish=nodes.reduce((a,n)=>n.end>a?n.end:a,nodes[0].end);
+  const daysLeft=daysBetween(today,projFinish);
+  const isLate=daysLeft<0;
+  const delayed=nodes.filter(n=>n.delayed&&n.isCritical);
+
+  // Stats
+  let h=`<div class="stat-row">
+    <div class="stat"><div class="stat-n" style="color:var(--red)">${criticalChain.length}</div><div class="stat-l">CRITICAL</div></div>
+    <div class="stat"><div class="stat-n" style="color:${delayed.length?'var(--red)':'var(--green)'}">${delayed.length}</div><div class="stat-l">DELAYED</div></div>
+    <div class="stat"><div class="stat-n" style="color:${isLate?'var(--red)':'var(--amber)'}">${Math.abs(daysLeft)}</div><div class="stat-l">${isLate?'DAYS LATE':'DAYS LEFT'}</div></div>
+  </div>`;
+
+  h+=`<div class="cp-card ${isLate?'danger':'good'}" style="margin-bottom:8px;">
+    <div class="cp-label">FORECAST COMPLETION</div>
+    <div class="cp-val">${fmtDate(projFinish)}</div>
+    <div class="cp-sub">${isLate?'⚠️ Running late — push critical trades':'✅ On track — monitor critical path'}</div>
+  </div>`;
+
+  // ── PRIORITY SEQUENCE FIRST ──
+  if(criticalChain.length){
+    const savedOrder=state.cpPriority||[];
+    const chainIds=criticalChain.map(n=>n.id);
+    const ordered=[];
+    savedOrder.forEach(id=>{ if(chainIds.includes(id)) ordered.push(id); });
+    criticalChain.forEach(n=>{ if(!ordered.includes(n.id)) ordered.push(n.id); });
+    const byId2={};
+    criticalChain.forEach(n=>byId2[n.id]=n);
+
+    h+=`<div style="font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--red);margin:12px 0 6px;display:flex;align-items:center;justify-content:space-between;">
+      <span>🎯 PRIORITY SEQUENCE — Hold to drag & reorder</span>
+      <button onclick="resetCpPriority()" style="font-size:9px;padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);cursor:pointer;">Reset</button>
+    </div>`;
+
+    h+=`<div id="cp-sequence">`;
+    ordered.forEach((id,i)=>{
+      const n=byId2[id]; if(!n) return;
+      const float=Math.max(0,n.float);
+      const isLast=i===ordered.length-1;
+      const prevName=i>0?(byId2[ordered[i-1]]||{name:'?'}).name.replace(/—.*/,'').trim():'';
+
+      h+=`<div style="display:flex;align-items:stretch;" id="cprow-${n.id}">
+        <div style="display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:6px;box-shadow:0 2px 8px rgba(232,75,58,.4);">${i+1}</div>
+          ${!isLast?`<div style="width:2px;flex:1;min-height:20px;background:linear-gradient(to bottom,var(--red),rgba(232,75,58,.2));"></div>`:''}
+        </div>
+        <div draggable="true"
+          ondragstart="cpDragStart(event,'${n.id}')"
+          ondragover="cpDragOver(event,'${n.id}')"
+          ondrop="cpDrop(event,'${n.id}')"
+          ondragend="cpDragEnd(event)"
+          style="flex:1;margin:4px 0 4px 8px;background:var(--surface);border:1px solid ${n.delayed?'rgba(232,75,58,.5)':'var(--border)'};border-left:3px solid ${n.delayed?'var(--red)':'rgba(232,75,58,.5)'};border-radius:10px;padding:9px 10px;cursor:grab;${n.delayed?'background:rgba(232,75,58,.06);':''}user-select:none;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:14px;color:var(--dim);">☰</span>
+            <div style="font-size:12px;font-weight:800;color:var(--white);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(n.name)}</div>
+            ${n.delayed?`<span style="font-size:9px;font-weight:800;color:var(--red);background:rgba(232,75,58,.15);border:1px solid rgba(232,75,58,.3);border-radius:4px;padding:1px 5px;flex-shrink:0;">DELAYED</span>`:''}
+          </div>
+          <div style="font-size:10px;color:var(--dim);">📅 ${fmtDate(n.start)} → ${fmtDate(n.end)} · ${n.dur}d · <span style="color:${float===0?'var(--red)':float<=5?'var(--amber)':'var(--dim)'};">${float}d float</span></div>
+          <div style="font-size:9px;margin-top:3px;color:${i===0?'var(--green)':'var(--dim)'};">${i===0?'⭐ Lead trade — drives entire sequence':`⬆ Follows #${i}: ${esc(prevName)}`}</div>
+        </div>
+      </div>`;
+    });
+    h+=`</div><div style="font-size:10px;color:var(--dim);text-align:center;padding:6px 0 12px;">Hold & drag to reprioritise</div>`;
+  }
+
+  // ── GANTT below ──
+  const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const totalDays=CP_WEEKS*7;
+  const now=new Date(today);
+  const dow=now.getDay();
+  const monday=new Date(now); monday.setDate(now.getDate()-(dow===0?6:dow-1)+(cpOffset*7));
+  const winStart=monday.toISOString().slice(0,10);
+  const winEnd=addDays(winStart,totalDays-1);
+  const dayDates=[];
+  for(let i=0;i<totalDays;i++){
+    const d=new Date(monday); d.setDate(monday.getDate()+i);
+    dayDates.push(d.toISOString().slice(0,10));
+  }
+  const todayIdx=dayDates.indexOf(today);
+
+  h+=`<div style="font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--dim);margin:8px 0 6px;">📊 GANTT VIEW</div>`;
+  h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <button onclick="cpOffset--;renderCritical()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:6px 14px;font-size:16px;font-weight:800;cursor:pointer;">◀</button>
+    <div style="flex:1;text-align:center;font-size:11px;font-weight:800;color:var(--text);">${cpOffset===0?'THIS WEEK':cpOffset>0?'+'+cpOffset+' WKS':cpOffset+' WKS'}</div>
+    <button onclick="cpOffset=0;renderCritical()" style="background:var(--amber);border:none;border-radius:8px;color:#111;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;">TODAY</button>
+    <button onclick="cpOffset++;renderCritical()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:6px 14px;font-size:16px;font-weight:800;cursor:pointer;">▶</button>
+  </div>`;
+
+  h+=`<div class="legend-row" style="margin-bottom:8px;">
+    <div class="leg-item"><div class="leg-box" style="background:var(--red);"></div>Critical</div>
+    <div class="leg-item"><div class="leg-box" style="background:rgba(245,166,35,.4);"></div>Non-critical</div>
+    <div class="leg-item"><div class="leg-box" style="background:var(--red);box-shadow:0 0 6px rgba(232,75,58,.8);"></div>Delayed</div>
+  </div>`;
+
+  const fmtWk=d=>`${d.getDate()}/${d.getMonth()+1}`;
+  const w1=new Date(monday), w2=new Date(monday), w3=new Date(monday);
+  w2.setDate(w2.getDate()+7); w3.setDate(w3.getDate()+14);
+
+  const allWithDates=nodes.filter(n=>n.start&&n.end&&n.start<=winEnd&&n.end>=winStart);
+  const visibleCritical=allWithDates.filter(n=>n.isCritical).sort((a,b)=>a.es-b.es);
+  const visibleNonCrit=allWithDates.filter(n=>!n.isCritical).sort((a,b)=>a.es-b.es);
+  const pct=i=>(i/totalDays*100).toFixed(2)+'%';
+
+  const buildRow=(n)=>{
+    const si=n.start<winStart?0:(dayDates.indexOf(n.start)<0?-1:dayDates.indexOf(n.start));
+    const eiRaw=dayDates.indexOf(n.end);
+    const ei=eiRaw<0?(n.end>winEnd?totalDays-1:-1):eiRaw;
+    if(si<0||ei<0) return '';
+    let cols='';
+    dayDates.forEach((ds,i)=>{
+      const d=new Date(ds); const isW=d.getDay()===0||d.getDay()===6;
+      cols+=`<div class="g-col${i===todayIdx?' tod':''}${isW?' wknd-col':''}" style="${n.isCritical&&!isW?'background:rgba(232,75,58,.03);':''}"></div>`;
+    });
+    const lft=pct(si), wid=((ei-si+1)/totalDays*100).toFixed(2)+'%';
+    const barColor=n.isCritical?(n.delayed?'var(--red)':'#C0392B'):(n.pri==='high'?'rgba(232,75,58,.3)':n.pri==='medium'?'rgba(245,166,35,.3)':'rgba(76,175,125,.25)');
+    const glow=n.delayed?'box-shadow:0 0 8px rgba(232,75,58,.7);':'';
+    return `<div class="g-row" style="min-height:32px;${n.isCritical?'background:rgba(232,75,58,.03);':''}">
+      <div class="g-lbl" style="font-size:9px;font-weight:${n.isCritical?'900':'600'};color:${n.isCritical?'var(--white)':'var(--dim)'};" title="${esc(n.name)}">${n.isCritical?'🔴 ':''}${esc(n.name)}</div>
+      <div class="g-grid">${cols}
+        <div class="g-bars">
+          ${todayIdx>=0?`<div class="tod-line" style="left:${pct(todayIdx)}"></div>`:''}
+          <div style="position:absolute;height:${n.isCritical?'16':'10'}px;top:50%;transform:translateY(-50%);border-radius:3px;left:${lft};width:${wid};background:${barColor};${glow}${n.isCritical?'border:1px solid rgba(232,75,58,.5);':''}"></div>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  h+=`<div class="gantt-wrap">
+    <div style="display:flex;padding-left:110px;border-bottom:1px solid var(--border);background:var(--surface2);">
+      <div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--red);padding:3px 0;border-left:1px solid var(--border);">${fmtWk(w1)}</div>
+      <div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--red);padding:3px 0;border-left:1px solid var(--border);">${fmtWk(w2)}</div>
+      <div style="flex:7;text-align:center;font-size:9px;font-weight:800;color:var(--red);padding:3px 0;border-left:1px solid var(--border);">${fmtWk(w3)}</div>
+    </div>
+    <div class="g-head" style="padding-left:110px;">
+      ${dayDates.map(ds=>{const d=new Date(ds);const isT=ds===today;const isW=d.getDay()===0||d.getDay()===6;return`<div class="g-dcell${isT?' tod':''}${isW?' wknd':''}">${DAYS[d.getDay()]}<br>${d.getDate()}</div>`;}).join('')}
+    </div>`;
+
+  if(!visibleCritical.length&&!visibleNonCrit.length){
+    h+=`<div style="text-align:center;padding:24px;color:var(--dim);font-size:12px;">No trades in this window — use ◀ ▶ to navigate.</div>`;
+  } else {
+    if(visibleCritical.length){
+      h+=`<div style="padding:4px 8px;font-size:9px;font-weight:800;letter-spacing:.6px;color:var(--red);background:rgba(232,75,58,.08);border-bottom:1px solid rgba(232,75,58,.2);">⚠ CRITICAL — Push these trades</div>`;
+      visibleCritical.forEach(n=>{ h+=buildRow(n); });
+    }
+    if(visibleNonCrit.length){
+      h+=`<div style="padding:4px 8px;font-size:9px;font-weight:800;letter-spacing:.6px;color:var(--dim);background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">NON-CRITICAL</div>`;
+      visibleNonCrit.forEach(n=>{ h+=buildRow(n); });
+    }
+  }
+  h+=`</div>`;
+  body.innerHTML=h;
+}
+
+  // ── Gantt-style view ──
+  const DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const totalDays=CP_WEEKS*7;
+  const now=new Date(today);
+  const dow=now.getDay();
+  const monday=new Date(now); monday.setDate(now.getDate()-(dow===0?6:dow-1)+(cpOffset*7));
+  const winStart=monday.toISOString().slice(0,10);
+  const winEnd=addDays(winStart,totalDays-1);
+
+  const dayDates=[];
+  for(let i=0;i<totalDays;i++){
+    const d=new Date(monday); d.setDate(monday.getDate()+i);
+    dayDates.push(d.toISOString().slice(0,10));
+  }
+  const todayIdx=dayDates.indexOf(today);
+
+
+// ── 4-WEEK LOOK-AHEAD ──────────────────────────────────────────────────────────
+// Locations derived from trade names — trades tagged with location in their name
+// We split trades into two location columns based on keywords
+function getTradeLocation(name){
+  const n=name.toLowerCase();
+  if(/community hub|hub|gym|ameniti|canteen|tilt door|timber floor|rubber floor/i.test(n)) return 'hub';
+  if(/admin|main block|l1|level 1|first floor|roof|cladding|brick|scaffold|plaster|joinery|window|ceiling|lift|slab|concrete|slab|electrical|mechanical|hydraulic|fire|services|paint|fitout|fit off|fit-out|floor finish|carpet|waterproof|acoustic/i.test(n)) return 'admin';
+  return 'both';
+}
+
+function buildDailySchedule(days){
+  // For each calendar day, find which trades are active
+  const result=[];
+  for(let i=0;i<days;i++){
+    const ds=addDays(todayStr(),i);
+    const d=new Date(ds);
+    const dow=d.getDay();
+    const isWeekend=dow===0||dow===6;
+    const active=isWeekend?[]:state.trades.filter(t=>{
+      const start=t.astart||t.start;
+      const end=t.aend||t.end;
+      return start&&end&&ds>=start&&ds<=end;
+    });
+    result.push({ date:ds, dow, isWeekend, trades:active });
+  }
+  return result;
+}
+
+function fmtDayLabel(ds){
+  const d=new Date(ds);
+  return `${d.getDate()}-${d.getMonth()+1}-${String(d.getFullYear()).slice(2)}`;
+}
+
+function tradesForCol(trades, col){
+  return trades.filter(t=>{
+    const loc=getTradeLocation(t.name);
+    return loc===col||loc==='both';
+  }).map(t=>{
+    // Shorten name for display
+    return t.name.replace(/—.*/,'').replace(/- .*/,'').trim();
+  }).join(' / ');
+}
+
+function renderLookahead(){
+  const body=document.getElementById('main-body');
+  const schedule=buildDailySchedule(28);
+  const hasLocs=state.trades.some(t=>getTradeLocation(t.name)!=='both');
+
+  // Detect location names from project
+  const loc1Name='COMMUNITY HUB';
+  const loc2Name='ADMIN (MAIN BLOCK)';
+
+  let h=`<div class="share-bar">
+    <button class="share-btn amber" onclick="printLookahead()">🖨 Print / Save PDF</button>
+    <button class="share-btn dark" onclick="emailLookahead()">✉ Email</button>
+  </div>
+  <div style="overflow-x:auto;">
+  <table style="width:100%;border-collapse:collapse;font-size:11px;">
+    <thead>
+      <tr>
+        <th style="width:70px;padding:7px 8px;background:#1a1d21;color:#F5A623;font-size:10px;letter-spacing:.5px;border:1px solid #363C45;white-space:nowrap;">DATE</th>
+        <th style="padding:7px 8px;background:#1a1d21;color:#F5A623;font-size:10px;letter-spacing:.5px;border:1px solid #363C45;">LOCATION: ${loc1Name}</th>
+        <th style="padding:7px 8px;background:#1a1d21;color:#F5A623;font-size:10px;letter-spacing:.5px;border:1px solid #363C45;">LOCATION: ${loc2Name}</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  schedule.forEach(day=>{
+    const d=new Date(day.date);
+    const dateLabel=fmtDayLabel(day.date);
+    const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    if(day.isWeekend){
+      if(d.getDay()===6){ // Only show Saturday as "Weekend" row
+        h+=`<tr><td colspan="3" style="padding:5px 8px;background:#2E4A6A;color:#7EB8F7;font-size:10px;font-weight:800;border:1px solid #363C45;">Weekend</td></tr>`;
+      }
+      return;
+    }
+
+    const hubTrades=tradesForCol(day.trades,'hub');
+    const adminTrades=tradesForCol(day.trades,'admin');
+    const bothTrades=day.trades.filter(t=>getTradeLocation(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+
+    const hub=hubTrades+(hubTrades&&bothTrades?' / ':'')+bothTrades;
+    const admin=adminTrades+(adminTrades&&bothTrades?' / ':'')+bothTrades;
+
+    const isEmpty=!hub&&!admin;
+    const isRDO=hub.toLowerCase().includes('rdo')||admin.toLowerCase().includes('rdo');
+    const rowBg=isRDO?'background:#3D3000;color:#F5A623;':isEmpty?'background:#1E2126;':'';
+
+    h+=`<tr>
+      <td style="padding:5px 8px;border:1px solid #363C45;color:#8B95A1;white-space:nowrap;vertical-align:top;${rowBg}">${dateLabel}</td>
+      <td style="padding:5px 8px;border:1px solid #363C45;vertical-align:top;color:#C8D0DA;${rowBg}">${isRDO?'<span style="color:#F5A623;font-weight:800;">Site Closed: RDO</span>':hub||'<span style="color:#4a5568;font-style:italic;">—</span>'}</td>
+      <td style="padding:5px 8px;border:1px solid #363C45;vertical-align:top;color:#C8D0DA;${rowBg}">${isRDO?'<span style="color:#F5A623;font-weight:800;">Site Closed: RDO</span>':admin||'<span style="color:#4a5568;font-style:italic;">—</span>'}</td>
+    </tr>`;
+  });
+
+  h+=`</tbody></table></div>`;
+  body.innerHTML=h;
+}
+
+function printLookahead(){
+  const schedule=buildDailySchedule(28);
+  const projectName=state.projectName||'Project';
+  const issued=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  const loc1='COMMUNITY HUB', loc2='ADMIN (MAIN BLOCK)';
+
+  let rows='';
+  schedule.forEach(day=>{
+    const d=new Date(day.date);
+    if(d.getDay()===6){
+      rows+=`<tr><td colspan="3" style="padding:5px 8px;background:#DBEAFE;color:#1D4ED8;font-size:11px;font-weight:700;border:1px solid #e5e7eb;">Weekend</td></tr>`;
+      return;
+    }
+    if(d.getDay()===0) return;
+
+    const hub=tradesForCol(day.trades,'hub');
+    const admin=tradesForCol(day.trades,'admin');
+    const both=day.trades.filter(t=>getTradeLocation(t.name)==='both').map(t=>t.name.replace(/—.*/,'').trim()).join(' / ');
+    const hubFull=hub+(hub&&both?' / ':'')+both;
+    const adminFull=admin+(admin&&both?' / ':'')+both;
+    const dateLabel=fmtDayLabel(day.date);
+
+    rows+=`<tr>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;color:#374151;white-space:nowrap;font-size:11px;vertical-align:top;">${dateLabel}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;font-size:11px;vertical-align:top;">${hubFull||'—'}</td>
+      <td style="padding:5px 8px;border:1px solid #e5e7eb;font-size:11px;vertical-align:top;">${adminFull||'—'}</td>
+    </tr>`;
+  });
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>${projectName} – PROGRAM LOOK AHEAD</title>
+  <style>
+    @page{size:A4 landscape;margin:15mm;}
+    body{font-family:Arial,sans-serif;color:#111;margin:0;padding:0;}
+    .header{display:flex;align-items:center;border:2px solid #e5e7eb;border-radius:4px;padding:10px 20px;margin-bottom:16px;}
+    .logo-box{border-right:2px solid #e5e7eb;padding-right:20px;margin-right:20px;font-size:22px;font-weight:900;color:#111;}
+    .logo-box span{color:#F5A623;}
+    .project-title{font-size:18px;font-weight:800;color:#111;flex:1;text-align:center;}
+    table{width:100%;border-collapse:collapse;}
+    th{padding:7px 10px;background:#1a1d21;color:#F5A623;font-size:11px;font-weight:800;letter-spacing:.5px;border:1px solid #374151;text-align:left;}
+    td{border:1px solid #e5e7eb;}
+    tr:nth-child(even) td{background:#f9fafb;}
+    .meta{font-size:11px;color:#6b7280;margin-bottom:10px;}
+  </style></head>
+  <body>
+  <div class="header">
+    <div class="logo-box">TULL<span>PRO</span></div>
+    <div class="project-title">${projectName} – PROGRAM LOOK AHEAD</div>
+  </div>
+  <div class="meta">Issued: ${issued}</div>
+  <table>
+    <thead><tr>
+      <th style="width:80px;">DATE</th>
+      <th>LOCATION: ${loc1}</th>
+      <th>LOCATION: ${loc2}</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  </body></html>`;
+
+  const w=window.open('','_blank');
+  w.document.write(html); w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+
+function emailLookahead(){
+  const schedule=buildDailySchedule(28);
+  let body=`PROGRAM LOOK AHEAD\n${state.projectName||'Project'}\nIssued: ${new Date().toLocaleDateString('en-GB')}\n\n`;
+  body+=`DATE             | COMMUNITY HUB                    | ADMIN (MAIN BLOCK)\n`;
+  body+=`${'─'.repeat(100)}\n`;
+  schedule.forEach(day=>{
+    const d=new Date(day.date);
+    if(d.getDay()===6){ body+=`Weekend\n`; return; }
+    if(d.getDay()===0) return;
+    const hub=tradesForCol(day.trades,'hub');
+    const admin=tradesForCol(day.trades,'admin');
+    body+=`${fmtDayLabel(day.date).padEnd(16)} | ${(hub||'—').slice(0,32).padEnd(32)} | ${admin||'—'}\n`;
+  });
+  const subject=encodeURIComponent(`Program Look Ahead — ${state.projectName}`);
+  window.open(`mailto:?subject=${subject}&body=${encodeURIComponent(body)}`,'_blank');
+}
+
+
+// ── API KEY ──────────────────────────────────────────────────────────
+function openApiSettings(){ closeMenu(); document.getElementById('api-key-input').value=getApiKey()||''; document.getElementById('api-key-status').textContent=''; openModal('api-modal'); }
+function getApiKey(){ try{ return localStorage.getItem('tullpro_apikey')||''; }catch(e){ return ''; } }
+function saveApiKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k||!k.startsWith('sk-')){ document.getElementById('api-key-status').textContent='⚠️ Key must start with sk-'; document.getElementById('api-key-status').style.color='var(--red)'; return; }
+  try{ localStorage.setItem('tullpro_apikey',k); }catch(e){}
+  document.getElementById('api-key-status').textContent='✅ Key saved!'; document.getElementById('api-key-status').style.color='var(--green)';
+  setTimeout(()=>closeModal('api-modal'),1000);
+}
+
+// ── PDF IMPORT ──────────────────────────────────────────────────────────
+function openImportPdf(){
+  closeMenu(); resetImport();
+  // Show key warning if no key set
+  const hasKey=!!getApiKey();
+  const sub=document.querySelector('.import-sub');
+  if(sub) sub.textContent = hasKey
+    ? 'AI key configured ✅ — tap to select your MS Project PDF and it will be scanned automatically.'
+    : '⚠️ No AI key set. Go to Menu → AI Settings to add your free Anthropic key first, then import your PDF.';
+  openModal('import-modal');
+}
+
+function resetImport(){
+  document.getElementById('import-status').style.display='none';
+  document.getElementById('import-review').style.display='none';
+  document.getElementById('import-review').innerHTML='';
+  document.getElementById('pdf-file').value='';
+  const box=document.querySelector('.import-box');
+  if(box) box.style.display='block';
+}
+
+async function handlePdfUpload(input){
+  const file=input.files[0];
+  if(!file||file.type!=='application/pdf'){ alert('Please select a PDF file.'); return; }
+
+  const apiKey=getApiKey();
+  if(!apiKey){ alert('Please add your Anthropic API key first via Menu → AI Settings.'); return; }
+
+  document.querySelector('.import-box').style.display='none';
+  const status=document.getElementById('import-status');
+  const msg=document.getElementById('import-msg');
+  const prog=document.getElementById('import-progress');
+  status.style.display='block';
+  msg.textContent='Reading PDF…'; prog.style.width='20%';
+
+  // Convert to base64
+  const b64=await new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+
+  msg.textContent='Sending to AI for analysis…'; prog.style.width='50%';
+
+  const prompt=`You are a construction programme parser. This is an MS Project or Primavera PDF schedule.
+Extract every LEAF task (skip summary/header rows) and return ONLY valid JSON with no markdown fences:
+{"projectName":"string","tasks":[{"id":"T1","name":"task name","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","priority":"high|medium|low","status":"onsite|upcoming"}]}
+Rules:
+- priority=high for: piling, concrete, structural steel, excavation, earthworks, demolition, formwork, slab, civil, hydraulic, electrical, mechanical, fire
+- priority=low for: landscaping, planting, painting, cleaning, defecting, carpet, signage
+- priority=medium for everything else
+- status=onsite if startDate is before or on ${todayStr()}, else upcoming
+- Dates must be YYYY-MM-DD format
+- Skip rows that are milestones (0 duration), summary rows, or header rows`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:8000,
+        messages:[{role:'user',content:[
+          {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+          {type:'text',text:prompt}
+        ]}]
+      })
+    });
+
+    const data=await resp.json();
+    prog.style.width='85%';
+
+    if(data.error){ msg.textContent='⚠️ API error: '+data.error.message; return; }
+
+    const raw=(data.content||[]).map(c=>c.text||'').join('').trim().replace(/```json|```/g,'').trim();
+    const obj=JSON.parse(raw);
+
+    if(!obj.tasks||!obj.tasks.length){ msg.textContent='⚠️ No tasks found in this PDF.'; return; }
+
+    prog.style.width='100%';
+    msg.textContent=`Found ${obj.tasks.length} tasks — review below`;
+    showImportReview(obj);
+
+  }catch(e){
+    msg.textContent='⚠️ Failed: '+(e.message||'Unknown error')+'. Check your API key in Menu → AI Settings.';
+    console.error(e);
+  }
+}
+
+function parseMSProjectText(text, filename){
+  const today = todayStr();
+  const tasks = [];
+  const seen = new Set();
+
+  // Match lines like: 119  SITE ESTABLISHMENT  5 d  Fri 27/06/25  Fri 4/07/25  100%
+  // or:               119  SITE ESTABLISHMENT  5 d  27/06/25  4/07/25  100%
+  const dateRx = /(\d{1,2}\/\d{1,2}\/\d{2,4})/g;
+
+  // Split into lines and look for rows with 2+ dates
+  const lines = text.split(/[\n\r]+/);
+
+  for(let line of lines){
+    line = line.trim();
+    if(!line || line.length < 10) continue;
+
+    const dates = [...line.matchAll(/\d{1,2}\/\d{1,2}\/\d{2,4}/g)].map(m=>m[0]);
+    if(dates.length < 2) continue;
+
+    // Parse start and end date
+    const startDate = parseAussieDate(dates[0]);
+    const endDate   = parseAussieDate(dates[1]);
+    if(!startDate || !endDate) continue;
+
+    // Extract task name: remove leading ID number, remove duration, dates, percentages
+    let name = line
+      .replace(/^\d+\s+/,'')                        // remove leading ID
+      .replace(/\d{1,3}\s*d\s*/gi,'')               // remove duration like "5 d"
+      .replace(/\d+\s*wks?\s*/gi,'')                // remove "2 wks"
+      .replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g,'')    // remove dates
+      .replace(/\d{1,3}%/g,'')                      // remove percentages
+      .replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b/gi,'') // remove day names
+      .replace(/\s{2,}/g,' ')
+      .trim();
+
+    if(!name || name.length < 3) continue;
+
+    // Skip obvious summary/header rows
+    const skipWords = ['programme','project summary','critical split','milestone','page ','last saved','program date','this programme','allowances'];
+    if(skipWords.some(w=>name.toLowerCase().includes(w))) continue;
+
+    // Skip milestone rows (same start and end)
+    if(startDate === endDate && name.length < 30) continue;
+
+    // Deduplicate
+    const key = name.toLowerCase().slice(0,40)+'|'+startDate;
+    if(seen.has(key)) continue;
+    seen.add(key);
+
+    // Assign priority based on trade keywords
+    const nl = name.toLowerCase();
+    let priority = 'medium';
+    if(/piling|concrete|structural steel|excavat|earthwork|demolit|formwork|slab|foundation|civil|hydraulic|electrical|mechanical|fire/i.test(nl)) priority='high';
+    if(/landscap|soft|planting|garden|fence|signage|carpet|paint|clean|defect/i.test(nl)) priority='low';
+
+    // Status: onsite if started before today
+    const status = startDate <= today ? 'onsite' : 'upcoming';
+
+    tasks.push({ id:'T'+tasks.length, name, startDate, endDate, priority, status });
+  }
+
+  return tasks;
+}
+
+function parseAussieDate(str){
+  // Handles d/M/yy or d/M/yyyy
+  const parts = str.split('/');
+  if(parts.length!==3) return null;
+  let [d,m,y] = parts.map(Number);
+  if(y<100) y+=2000;
+  if(!d||!m||!y||m>12||d>31) return null;
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function guessProjectName(text, filename){
+  // Try to find project name in first few lines
+  const lines = text.split(/[\n\r]+/).slice(0,20);
+  for(const l of lines){
+    const t=l.trim();
+    if(t.length>10 && t.length<80 && !/^\d/.test(t) && /[A-Z]/.test(t) && !/page|programme date|last saved/i.test(t)){
+      return t;
+    }
+  }
+  return filename.replace('.pdf','').replace(/_/g,' ');
+}
+
+function showManualPasteOption(){
+  const rev=document.getElementById('import-review');
+  rev.style.display='block';
+  rev.innerHTML=`
+    <div style="font-size:12px;color:var(--dim);margin-bottom:8px;">Alternatively, open the PDF, select all text (Ctrl+A), copy it, and paste below:</div>
+    <textarea class="f-input" id="paste-input" style="min-height:120px;" placeholder="Paste your MS Project schedule text here…"></textarea>
+    <button class="btn btn-amber" style="width:100%;margin-top:8px;" onclick="parsePastedText()">Extract Tasks from Text</button>
+  `;
+}
+
+function parsePastedText(){
+  const text=document.getElementById('paste-input').value;
+  if(!text.trim()){ alert('Please paste some text first.'); return; }
+  const tasks=parseMSProjectText(text,'pasted');
+  if(!tasks.length){ alert('Could not find any tasks. Make sure the text includes columns like: Task Name, Start, Finish.'); return; }
+  const msg=document.getElementById('import-msg');
+  msg.textContent=`Found ${tasks.length} tasks — review below`;
+  showImportReview({ projectName:'Imported Project', tasks });
+}
+
+function showImportReview(obj){
+  const rev=document.getElementById('import-review');
+  rev.style.display='block';
+  let h=`<div style="font-size:11px;color:var(--dim);margin-bottom:10px;">Review and tap Import to add to your programme.</div>`;
+  if(obj.projectName){ h+=`<div style="font-size:13px;font-weight:800;margin-bottom:10px;">📋 ${esc(obj.projectName)}</div>`; }
+  obj.tasks.forEach(t=>{
+    h+=`<div class="card ${t.priority||'medium'}" style="margin-bottom:6px;">
+      <div class="card-top"><div class="card-name" style="font-size:12px;">${esc(t.name)}</div>
+      <span class="badge b-${t.priority||'medium'}">${(t.priority||'medium').toUpperCase()}</span></div>
+      <div class="card-meta">📅 ${fmtDate(t.startDate)} → ${fmtDate(t.endDate)}</div>
+    </div>`;
+  });
+  window._pendingImport=obj;
+  h+=`<button class="btn btn-amber" style="width:100%;margin-top:6px;" onclick="confirmImport()">✅ Import ${obj.tasks.length} Trades</button>`;
+  rev.innerHTML=h;
+}
+
+function confirmImport(){
+  const obj=window._pendingImport; if(!obj)return;
+  if(obj.projectName) state.projectName=obj.projectName;
+  obj.tasks.forEach(t=>{
+    state.trades.push({
+      id:uid(), name:t.name, company:'', start:t.startDate, end:t.endDate,
+      pri:t.priority||'medium', status:t.status||'upcoming', notes:'', deps:[]
+    });
+  });
+  saveState(); updateProjDisplay(); closeModal('import-modal'); resetImport();
+  switchTab('list');
+}
+
+// ── TRADE CRUD ──────────────────────────────────────────────────────────
+let editId=null, formSel={pri:'medium',status:'upcoming'};
+
+function openAddModal(){
+  editId=null; formSel={pri:'medium',status:'upcoming'};
+  document.getElementById('trade-modal-title').textContent='Add Trade';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-company').value='';
+  document.getElementById('f-start').value=todayStr();
+  document.getElementById('f-end').value='';
+  document.getElementById('f-notes').value='';
+  document.getElementById('f-astart').value='';
+  document.getElementById('f-aend').value='';
+  document.getElementById('f-delay-preview').style.display='none';
+  updateSegUI(); openModal('trade-modal');
+}
+
+function openEdit(id){
+  const t=state.trades.find(x=>x.id===id); if(!t)return;
+  editId=id; formSel={pri:t.pri,status:t.status};
+  document.getElementById('trade-modal-title').textContent='Edit Trade';
+  document.getElementById('f-name').value=t.name;
+  document.getElementById('f-company').value=t.company||'';
+  document.getElementById('f-start').value=t.start||'';
+  document.getElementById('f-end').value=t.end||'';
+  document.getElementById('f-astart').value=t.astart||'';
+  document.getElementById('f-aend').value=t.aend||'';
+  document.getElementById('f-notes').value=t.notes||'';
+  updateDelayPreview(t.start,t.end,t.astart||'',t.aend||'');
+  updateSegUI(); openModal('trade-modal');
+}
+
+function updateDelayPreview(pstart,pend,astart,aend){
+  const el=document.getElementById('f-delay-preview');
+  if(!el) return;
+  const compareEnd=aend||''; const comparePlan=pend||'';
+  if(!compareEnd||!comparePlan){ el.style.display='none'; return; }
+  const diff=daysBetween(comparePlan,compareEnd);
+  if(diff===0){ el.style.display='block'; el.style.color='var(--green)'; el.innerHTML='✅ On programme — no delay'; }
+  else if(diff>0){ el.style.display='block'; el.style.color='var(--red)'; el.innerHTML=`⚠️ <strong>${diff} day delay</strong> — forecast finish is ${fmtDate(compareEnd)} vs planned ${fmtDate(comparePlan)}`; }
+  else{ el.style.display='block'; el.style.color='var(--green)'; el.innerHTML=`✅ <strong>${Math.abs(diff)} days early</strong> — forecast finish ${fmtDate(compareEnd)} vs planned ${fmtDate(comparePlan)}`; }
+}
+
+function selSeg(type,val){ formSel[type]=val; updateSegUI(); }
+function updateSegUI(){
+  ['high','medium','low'].forEach(v=>{ const el=document.querySelector(`#seg-pri [data-v="${v}"]`); if(el) el.className='seg-o'+(formSel.pri===v?' s-'+v:''); });
+  ['onsite','upcoming'].forEach(v=>{ const el=document.querySelector(`#seg-status [data-v="${v}"]`); if(el) el.className='seg-o'+(formSel.status===v?' s-'+v:''); });
+}
+
+function saveTrade(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){ document.getElementById('f-name').style.borderColor='var(--red)'; return; }
+  document.getElementById('f-name').style.borderColor='';
+  const t={
+    id:editId||uid(),name,
+    company:document.getElementById('f-company').value.trim(),
+    start:document.getElementById('f-start').value,
+    end:document.getElementById('f-end').value,
+    astart:document.getElementById('f-astart').value,
+    aend:document.getElementById('f-aend').value,
+    pri:formSel.pri,status:formSel.status,
+    notes:document.getElementById('f-notes').value.trim(),deps:[]
+  };
+  if(editId){ const i=state.trades.findIndex(x=>x.id===editId); if(i>=0)state.trades[i]=t; }
+  else state.trades.push(t);
+  saveState(); closeModal('trade-modal'); render();
+}
+
+function toggleStatus(id){
+  const t=state.trades.find(x=>x.id===id); if(!t)return;
+  t.status=t.status==='onsite'?'upcoming':'onsite';
+  saveState(); render();
+}
+
+function confirmDelete(id){
+  const t=state.trades.find(x=>x.id===id); if(!t)return;
+  showConfirm('Remove Trade?',`"${t.name}" will be permanently removed.`,()=>{ state.trades=state.trades.filter(x=>x.id!==id); saveState(); render(); });
+}
+
+// ── MODALS ──────────────────────────────────────────────────────────────
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+function closeModalBg(e,id){ if(e.target.id===id) closeModal(id); }
+function showConfirm(title,msg,cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  document.getElementById('confirm-ok').onclick=()=>{ cb(); closeModal('confirm-modal'); };
+  openModal('confirm-modal');
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────
+loadState();
+updateProjDisplay();
+switchTab('list');
+</script>
+</body>
+</html>
